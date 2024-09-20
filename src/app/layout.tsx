@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
+import { EdgeStoreProvider } from "@/providers/edge-store-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -42,9 +43,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={GeistSans.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        <EdgeStoreProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
+        </EdgeStoreProvider>
       </body>
     </html>
   );
