@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRESS_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  # app:
+  #   build:
+  #     context: .
+  #   image: nextjs-dev
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - EDGE_STORE_ACCESS_KEY=${EDGE_STORE_ACCESS_KEY}
+  #     - EDGE_STORE_SECRET_KEY=${EDGE_STORE_SECRET_KEY}
+  #     - DATABASE_URL=${DATABASE_URL}
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./src
+  #         target: /app/src
+  #         ignore:
+  #           - node_modules/
+  #       - action: rebuild
+  #         path: package.json
+  #   depends_on:
+  #     - db
+
+volumes:
+  postgres_data:

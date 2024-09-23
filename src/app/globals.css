@@ -2,6 +2,25 @@
   @tailwind components;
   @tailwind utilities;
 
+
+.rdp-vhidden {
+  @apply hidden !important;
+}
+
+.rdp-caption_dropdowns {
+  @apply flex space-x-3;
+}
+
+.rdp-dropdown_month > div {
+  @apply hidden !important;
+}
+.rdp-dropdown_year > div {
+  @apply hidden !important;
+}
+
+select.rdp-dropdown {
+  @apply p-1 flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
+}
   @layer base {
     :root {
       --background: 0 0% 100%;
@@ -33,6 +52,16 @@
       --ring: 240 10% 3.9%;
 
       --radius: 0.5rem;
+
+      --chart-1: 12 76% 61%;
+
+      --chart-2: 173 58% 39%;
+
+      --chart-3: 197 37% 24%;
+
+      --chart-4: 43 74% 66%;
+
+      --chart-5: 27 87% 67%;
     }
 
     .dark {
@@ -63,6 +92,11 @@
       --border: 240 3.7% 15.9%;
       --input: 240 3.7% 15.9%;
       --ring: 240 4.9% 83.9%;
+      --chart-1: 220 70% 50%;
+      --chart-2: 160 60% 45%;
+      --chart-3: 30 80% 55%;
+      --chart-4: 280 65% 60%;
+      --chart-5: 340 75% 55%;
     }
   }
 

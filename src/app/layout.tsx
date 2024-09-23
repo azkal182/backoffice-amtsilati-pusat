@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 import { EdgeStoreProvider } from "@/providers/edge-store-provider";
+import React from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -14,25 +15,11 @@ export const metadata: Metadata = {
       ? `https://${process.env.VERCEL_URL}`
       : `http://localhost:${process.env.PORT || 3000}`
   ),
-  title: "shadcn/ui sidebar",
+  title: "Amtsilati Pusat",
   description:
-    "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness.",
-  alternates: {
-    canonical: "/"
-  },
-  openGraph: {
-    url: "/",
-    title: "shadcn/ui sidebar",
-    description:
-      "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness.",
-    type: "website"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "shadcn/ui sidebar",
-    description:
-      "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness."
-  }
+    "Backoffice from amtsilati pusat app",
+
+
 };
 
 export default function RootLayout({

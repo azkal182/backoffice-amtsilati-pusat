@@ -10,6 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import DatePickerDemo from "@/components/date-picker-demo";
 
 export default function DashboardPage() {
   return (
@@ -27,7 +28,8 @@ export default function DashboardPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <PlaceholderContent />
+      {/*<PlaceholderContent />*/}
+<DatePickerDemo/>
     </ContentLayout>
   );
 }

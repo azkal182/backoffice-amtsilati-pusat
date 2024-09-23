@@ -2,6 +2,9 @@ import { db } from "@/lib/db";
 import { calculateNextDates, createEventWithCutiBersama } from "@/lib/event";
 import { Event, FrequencyType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import moment from "moment-hijri";
+
+
 import _ from "lodash";
 
 function calculateAge(birthDate: Date, targetYear: number): number {
@@ -64,6 +67,14 @@ const transformEvents = (events: any[]) => {
     return result;
   }, {});
 };
+const getYear = (date:Date, isHijri:boolean) => {
+  if (isHijri) {
+    const yearHijri = moment(new Date(date)).iYear();
+    return yearHijri
+  } else {
+    return date.getFullYear()
+  }
+}
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -86,16 +97,14 @@ export async function GET(request: NextRequest) {
     );
 
     // Filter hanya event yang terjadi di tahun 2030
-    const eventsInYear2030 = eventDates.filter(
+    const eventsInYear = eventDates.filter(
       (date) => date.getFullYear() === YEAR
     );
 
-    // console.log(eventsInYear2030);
-
-    if (eventsInYear2030.length > 0) {
-      eventsInYear2030.map((date) => {
+    if (eventsInYear.length > 0) {
+      eventsInYear.map((date) => {
         resultEvent.push({
-          name: event.name,
+          name: `${event.name} ${event.showYear ? getYear(date, event.isHijri):""}${event.calculateAge ? "yang ke "+calculateAge(event.startDate, YEAR):""}`,
           cuti: event.isCutiBersama,
           category: event.category,
           startDate: date
@@ -104,35 +113,17 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  //   console.log(resultEvent);
 
-  //   createEventWithCutiBersama(
-  //     "Puasa Sunah senin",
-  //     new Date("2024-04-01"),
-  //     false, // Event diinput dalam kalender Hijriyah
-  //     false, // Cuti bersama
-  //     FrequencyType.WEEKLY,
-  //     1
-  //   );
-
-  //   // 2. Event lain yang bukan cuti bersama
-  //   createEventWithCutiBersama(
-  //     "Event Non-Cuti Bersama",
-  //     new Date("2024-03-15"), // Input Gregorian
-  //     false, // Event diinput dalam kalender Gregorian
-  //     false, // Bukan cuti bersama
-  //     FrequencyType.YEARLY,
-  //     1
-  //   );
 
   const sorted = resultEvent.sort(
-    (a, b) => new Date(a.startDate) - new Date(b.startDate)
+    //   @ts-ignore
+    (a:any, b:any) => new Date(a.startDate)  - new Date(b.startDate)
   );
 
   const transformed = transformEvents(sorted);
 
   return NextResponse.json({
-    message: "oke",
+    message: "success",
     events: transformed
   });
 }

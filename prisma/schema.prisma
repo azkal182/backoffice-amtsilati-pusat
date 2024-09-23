@@ -2,60 +2,61 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id       Int    @id @default(autoincrement())
-    username String @unique
-    password String
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
 }
 
 model Poster {
-    id          Int      @id @default(autoincrement())
-    description String?
-    url         String
-    path        String?
-    created_at  DateTime @default(now())
-    publish     Boolean  @default(true)
+  id          Int      @id @default(autoincrement())
+  description String?
+  url         String
+  path        String?
+  created_at  DateTime @default(now())
+  publish     Boolean  @default(true)
 }
 
 model Store {
-    id              Int      @id @default(autoincrement())
-    title           String
-    description     String
-    firstPublished  DateTime @default(now())
-    maximumPurchase Int
-    pageTotal       Int
-    isbn            String?
-    width           Int
-    height          Int
-    price           Float
-    cover           String
-    created_at      DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String
+  firstPublished  DateTime @default(now())
+  maximumPurchase Int
+  pageTotal       Int
+  isbn            String?
+  width           Int
+  height          Int
+  price           Float
+  cover           String
+  created_at      DateTime @default(now())
 }
 
 model Event {
-    id            Int      @id @default(autoincrement())
-    name          String
-    startDate     DateTime // Tanggal awal Gregorian (Masehi)
-    isHijri       Boolean // Apakah event diinput berdasarkan kalender Hijriyah?
-    isCutiBersama Boolean  @default(false) // Apakah ini termasuk cuti bersama?
-    calculateAge  Boolean  @default(false)
+  id            Int      @id @default(autoincrement())
+  name          String
+  startDate     DateTime // Tanggal awal Gregorian (Masehi)
+  isHijri       Boolean // Apakah event diinput berdasarkan kalender Hijriyah?
+  isCutiBersama Boolean  @default(false) // Apakah ini termasuk cuti bersama?
+  calculateAge  Boolean  @default(false)
+  showYear      Boolean  @default(false)
 
-    // frequency     Frequency @relation(fields: [frequencyId], references: [id])
-    // frequencyId   Int
-    frequency FrequencyType
-    category  Category
-    duration  Int? // Durasi event dalam hari (null jika tidak ditentukan)
-    endDate   DateTime? // Tanggal akhir Gregorian (null jika tidak ditentukan)
-    createdAt DateTime      @default(now())
-    updatedAt DateTime      @updatedAt
+  // frequency     Frequency @relation(fields: [frequencyId], references: [id])
+  // frequencyId   Int
+  frequency FrequencyType
+  category  Category
+  duration  Int? // Durasi event dalam hari (null jika tidak ditentukan)
+  endDate   DateTime? // Tanggal akhir Gregorian (null jika tidak ditentukan)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 // model Frequency {
@@ -73,12 +74,12 @@ model Event {
 // }
 
 enum FrequencyType {
-    DAILY
-    WEEKLY
-    MONTHLY
-    YEARLY
-    HIJRI_MONTHLY
-    HIJRI_YEARLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  HIJRI_MONTHLY
+  HIJRI_YEARLY
 }
 
 // enum DayOfWeek {
@@ -92,8 +93,8 @@ enum FrequencyType {
 // }
 
 enum Category {
-    HARI_LIBUR_NASIONAL
-    HARI_BESAR_ISLAM
-    HARI_BESAR_PPDF
-    HARI_SUNNAH
+  HARI_LIBUR_NASIONAL
+  HARI_BESAR_ISLAM
+  HARI_BESAR_PPDF
+  HARI_SUNNAH
 }

@@ -17,11 +17,12 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import {ChangeEventHandler, FormEvent, useEffect, useState} from "react";
 import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@/components/new-calender";
 import { createEvent, FormTypeEvent } from "@/actios/calender";
 import { Category, FrequencyType } from "@prisma/client";
+import * as React from "react";
 
 interface DatePickerDemoProps {
   isDateError?: string;
@@ -41,9 +42,10 @@ const DatePicker = ({
   selectedDate,
   setSelectedDate
 }: DatePickerDemoProps) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>      <PopoverTrigger asChild>
         <Button
           variant={"outline"}
           className={cn(
@@ -54,22 +56,35 @@ const DatePicker = ({
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {selectedDate ? (
-            format(selectedDate, "PPP")
+            format(selectedDate as any, "PPP")
           ) : (
             <span>Pilih tanggal</span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
+        {/*<Calendar*/}
+        {/*  mode="single"*/}
+        {/*  selected={selectedDate}*/}
+        {/*  //   onSelect={setSelectedDate}*/}
+        {/*  onSelect={(data) => {*/}
+        {/*    setSelectedDate(data);*/}
+        {/*    console.log("oke", data);*/}
+        {/*  }}*/}
+        {/*  onMonthChange={(date)=>  setSelectedDate(date)}*/}
+        {/*  initialFocus*/}
+        {/*/>*/}
         <Calendar
-          mode="single"
-          selected={selectedDate}
-          //   onSelect={setSelectedDate}
-          onSelect={(data) => {
-            setSelectedDate(data);
-            console.log("oke", data);
-          }}
-          initialFocus
+            mode="single"
+            captionLayout="dropdown"
+            selected={selectedDate as any}
+            onSelect={(date) => {
+              setSelectedDate(date)
+              console.log({date})
+            }}
+            onDayClick={()=>setIsCalendarOpen((false))}
+            fromYear={1940}
+            toYear={new Date().getFullYear()}
         />
       </PopoverContent>
     </Popover>
@@ -79,18 +94,35 @@ const DatePicker = ({
 const EventForm = () => {
   const [formData, setFormData] = useState<FormTypeEvent>({
     name: "",
-    startDate: null,
+    startDate: undefined,
     isHijri: false,
     isCutiBersama: false,
-    frequencyType: null,
+    frequencyType: undefined,
+    showYear:false,
     interval: 1,
     duration: 1,
-    category: null,
+    category: undefined,
     calculateAge: false
   });
   const [isDateError, setIsDateError] = useState("");
 
-  const handleInputChange = (e) => {
+  const resetForm = () => {
+    setFormData({
+      ...formData,
+      name: "",
+      startDate: undefined,
+      isHijri: false,
+      isCutiBersama: false,
+      frequencyType: undefined,
+      showYear:false,
+      interval: 1,
+      duration: 1,
+      category: undefined,
+      calculateAge: false
+    })
+  }
+
+  const handleInputChange = (e:any) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -98,7 +130,7 @@ const EventForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.startDate === null) {
       console.log("Tanggal awal wajib dipilih");
@@ -106,10 +138,17 @@ const EventForm = () => {
       setIsDateError("Tanggal awal wajib dipilih");
     }
     // Submit form logic here
-    createEvent(formData);
+    // await createEvent(formData);
     console.log(JSON.stringify(formData));
+    resetForm()
+
+
   };
 
+  useEffect(() => {
+    console.log("Form data after reset:", formData);
+  }, [formData]);
+  // @ts-ignore
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2">
@@ -131,7 +170,7 @@ const EventForm = () => {
           <div className="mt-1">
             <DatePicker
               isDateError={isDateError}
-              selectedDate={formData.startDate}
+              selectedDate={formData.startDate as any}
               setSelectedDate={(date: any) => {
                 const formatedDate = new Date(
                   date.getFullYear(),
@@ -141,6 +180,8 @@ const EventForm = () => {
                   0,
                   0
                 );
+
+                console.log({formatedDate})
 
                 setFormData({ ...formData, startDate: formatedDate as any });
               }}
@@ -154,15 +195,16 @@ const EventForm = () => {
             onValueChange={(val: FrequencyType) =>
               setFormData({ ...formData, frequencyType: val })
             }
+            value={formData.frequencyType ?? ""}
           >
-            <SelectTrigger>
+            <SelectTrigger className={"mt-1"}>
               <SelectValue placeholder="Pilih Frekuensi" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="DAILY">Setiap Hari</SelectItem>
               <SelectItem value="WEEKLY">Setiap Minggu</SelectItem>
-              <SelectItem value="MONTHLY">Setiap Bulan</SelectItem>
-              <SelectItem value="YEARLY">Setiap Tahun</SelectItem>
+              <SelectItem value="MONTHLY">Setiap Bulan Masehi</SelectItem>
+              <SelectItem value="YEARLY">Setiap Tahun Masehi</SelectItem>
               <SelectItem value="HIJRI_MONTHLY">
                 Setiap Bulan Hijriyah
               </SelectItem>
@@ -179,8 +221,9 @@ const EventForm = () => {
             onValueChange={(val: Category) =>
               setFormData({ ...formData, category: val })
             }
+            value={formData.category ?? ""}
           >
-            <SelectTrigger className="">
+            <SelectTrigger className="mt-1">
               <SelectValue placeholder="Pilih Kategory" />
             </SelectTrigger>
             <SelectContent>
@@ -195,40 +238,39 @@ const EventForm = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <div className="form-group flex items-center gap-2">
           <Checkbox
-            id="isHijri"
-            name="isHijri"
-            checked={formData.isHijri}
-            onCheckedChange={(val: boolean) => {
-              setFormData({ ...formData, isHijri: val });
-            }}
+              id="isCutiBersama"
+              name="isCutiBersama"
+              checked={formData.showYear}
+              onCheckedChange={(val: boolean) =>
+                  setFormData({...formData, showYear: val})
+              }
           />
-          <Label htmlFor="isHijri">Menggunakan Kalender Hijriah?</Label>
-        </div>
-
-        <div className="form-group flex items-center gap-2">
-          <Checkbox
-            id="isCutiBersama"
-            name="isCutiBersama"
-            checked={formData.isCutiBersama}
-            onCheckedChange={(val: boolean) =>
-              setFormData({ ...formData, isCutiBersama: val })
-            }
-          />
-          <Label htmlFor="isCutiBersama">Cuti Bersama?</Label>
+          <Label htmlFor="isCutiBersama">Tampilkan Tahun?</Label>
         </div>
         <div className="form-group flex items-center gap-2">
           <Checkbox
-            id="calculateAge"
-            name="calculateAge"
-            checked={formData.calculateAge}
-            onCheckedChange={(val: boolean) =>
-              setFormData({ ...formData, calculateAge: val })
-            }
+              id="calculateAge"
+              name="calculateAge"
+              checked={formData.calculateAge}
+              onCheckedChange={(val: boolean) =>
+                  setFormData({...formData, calculateAge: val})
+              }
           />
           <Label htmlFor="isCutiBersama">Hitung Umur?</Label>
+        </div>
+        <div className="form-group flex items-center gap-2">
+          <Checkbox
+              id="isCutiBersama"
+              name="isCutiBersama"
+              checked={formData.isCutiBersama}
+              onCheckedChange={(val: boolean) =>
+                  setFormData({...formData, isCutiBersama: val})
+              }
+          />
+          <Label htmlFor="isCutiBersama">Cuti Bersama?</Label>
         </div>
       </div>
 
@@ -257,7 +299,7 @@ const EventForm = () => {
         />
       </div> */}
 
-      <Button type="submit" className="w-full">
+      <Button disabled={formData.name === "" || formData.startDate === undefined} type="submit" className="w-full">
         Submit
       </Button>
     </form>

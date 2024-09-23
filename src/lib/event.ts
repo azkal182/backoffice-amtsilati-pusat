@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FrequencyType } from "@prisma/client";
 import moment from "moment-hijri";
 import { db } from "./db";
