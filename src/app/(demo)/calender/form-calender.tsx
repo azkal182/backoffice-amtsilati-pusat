@@ -138,8 +138,7 @@ const EventForm = () => {
       setIsDateError("Tanggal awal wajib dipilih");
     }
     // Submit form logic here
-    // await createEvent(formData);
-    console.log(JSON.stringify(formData));
+    await createEvent(formData);
     resetForm()
 
 
