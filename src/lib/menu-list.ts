@@ -48,24 +48,6 @@ export function getMenuList(pathname: string): Group[] {
             groupLabel: "Contents",
             menus: [
                 {
-                    href: "",
-                    label: "Posts",
-                    active: pathname.includes("/posts"),
-                    icon: SquarePen,
-                    submenus: [
-                        {
-                            href: "/posts",
-                            label: "All Posts",
-                            active: pathname === "/posts"
-                        },
-                        {
-                            href: "/posts/new",
-                            label: "New Post",
-                            active: pathname === "/posts/new"
-                        }
-                    ]
-                },
-                {
                     href: "/calender",
                     label: "Calender",
                     active: pathname.includes("/calender"),

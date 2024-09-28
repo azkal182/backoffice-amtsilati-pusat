@@ -1,6 +1,8 @@
+import { signIn } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React from "react";
+import LoginForm from "./login-form";
 
 function LoginPage() {
   return (
@@ -13,37 +15,7 @@ function LoginPage() {
               <h1 className="text-2xl font-semibold">Login</h1>
             </div>
             <div className="divide-y divide-gray-200">
-              <div className="py-6 text-base leading-6 text-gray-700 sm:text-lg sm:leading-7">
-                <div className="relative">
-                  <Label htmlFor="username" className="dark:text-gray-200">
-                    Username
-                  </Label>
-                  <Input
-                    autoComplete="off"
-                    id="username"
-                    name="username"
-                    type="text"
-                    placeholder="Username"
-                  />
-                </div>
-                <div className="relative">
-                  <Label htmlFor="password" className="dark:text-gray-200">
-                    Password
-                  </Label>
-                  <Input
-                    autoComplete="off"
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                  />
-                </div>
-                <div className="relative mt-4">
-                  <button className="bg-cyan-500 text-white rounded-md px-2 py-1 w-full">
-                    Submit
-                  </button>
-                </div>
-              </div>
+              <LoginForm />
             </div>
           </div>
         </div>

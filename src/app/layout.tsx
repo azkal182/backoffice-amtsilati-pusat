@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { EdgeStoreProvider } from "@/providers/edge-store-provider";
 import React from "react";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -16,10 +17,7 @@ export const metadata: Metadata = {
       : `http://localhost:${process.env.PORT || 3000}`
   ),
   title: "Amtsilati Pusat",
-  description:
-    "Backoffice from amtsilati pusat app",
-
-
+  description: "Backoffice from amtsilati pusat app"
 };
 
 export default function RootLayout({
@@ -28,14 +26,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={GeistSans.className}>
-        <EdgeStoreProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-          </ThemeProvider>
-        </EdgeStoreProvider>
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={GeistSans.className}>
+          <EdgeStoreProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {children}
+            </ThemeProvider>
+          </EdgeStoreProvider>
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

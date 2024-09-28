@@ -41,7 +41,7 @@ function FormPoster() {
   }
   return (
     <form action={handleCreatePoster}>
-      <div className="w-[450px] mx-auto">
+      <div className="md:w-[450px] mx-auto">
         <SingleImageDropzone
           className="mx-auto"
           width={450}

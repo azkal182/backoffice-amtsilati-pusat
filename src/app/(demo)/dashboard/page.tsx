@@ -42,7 +42,7 @@ export default async function DashboardPage() {
         <DatePickerDemo />
       </PageContainer> */}
 
-      <div className="grid grid-cols-4 gap-4 mt-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <Card className="p-6">
           <div className="flex items-start justify-between">
             <h3 className="tracking-tight text-sm font-medium">Total Event</h3>
