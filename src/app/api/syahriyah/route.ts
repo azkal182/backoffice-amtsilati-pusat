@@ -17,15 +17,42 @@ const monthHijri = [
     "dzul qadah",
     "dzul hijjah"
 ];
+// Cache untuk menyimpan monthPrices dan timestamp kapan diambil
+let cache: { monthPrices: any[] | null, timestamp: number } = {
+    monthPrices: null,
+    timestamp: 0
+};
 
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 1 hari dalam milidetik
+
+// Fungsi untuk mengambil atau memperbarui cache jika perlu
+const getCachedMonthPrices = async () => {
+    const now = Date.now();
+
+    // Cek apakah cache valid (belum kadaluarsa)
+    if (cache.monthPrices && (now - cache.timestamp < CACHE_DURATION)) {
+        return cache.monthPrices;
+    }
+
+    // Jika cache kadaluarsa atau belum ada, ambil dari database dan perbarui cache
+    const monthPrices = await db.priceSyahriyah.findMany({ orderBy: { priceAtMasehi: "asc" } });
+    cache = {
+        monthPrices,
+        timestamp: now
+    };
+
+    return monthPrices;
+};
 
 const findPrice = async (monthIndex: number, year: number, priceType: "FULL" | "DISC" | "FREE"): Promise<number> => {
-    const monthPrices = await db.priceSyahriyah.findMany({ orderBy: { priceAtMasehi: "asc" } })
+    // Ambil data harga dari cache atau database
+    const monthPrices = await getCachedMonthPrices();
+
     let applicablePrice: any = null;
 
     for (let i = 0; i < monthPrices.length; i++) {
         const { month: currentMonth, year: currentYear } = parseHijriDate(monthPrices[i].priceAtHijri);
-        const currentYearNum = currentYear
+        const currentYearNum = currentYear;
         const currentMonthIndex = monthHijri.indexOf(currentMonth);
 
         if (
@@ -48,12 +75,50 @@ const findPrice = async (monthIndex: number, year: number, priceType: "FULL" | "
             // Jika priceType bukan "FULL" atau "DISC", maka set harga ke 0
             priceValue = 0;
         }
-        return priceValue
+        return priceValue;
     } else {
-        // return `Harga untuk bulan ${monthHijri[monthIndex]} ${year} tidak tersedia.`;
-        return 0
+        return 0;
     }
 };
+
+
+
+
+// const findPrice = async (monthIndex: number, year: number, priceType: "FULL" | "DISC" | "FREE"): Promise<number> => {
+//     const monthPrices = await db.priceSyahriyah.findMany({ orderBy: { priceAtMasehi: "asc" } })
+//     let applicablePrice: any = null;
+
+//     for (let i = 0; i < monthPrices.length; i++) {
+//         const { month: currentMonth, year: currentYear } = parseHijriDate(monthPrices[i].priceAtHijri);
+//         const currentYearNum = currentYear
+//         const currentMonthIndex = monthHijri.indexOf(currentMonth);
+
+//         if (
+//             year > currentYearNum ||
+//             (year === currentYearNum && monthIndex >= currentMonthIndex)
+//         ) {
+//             applicablePrice = monthPrices[i]; // Simpan harga yang berlaku
+//         } else {
+//             break; // Keluar jika sudah melewati bulan atau tahun input
+//         }
+//     }
+
+//     if (applicablePrice) {
+//         let priceValue;
+//         if (priceType === "FULL") {
+//             priceValue = applicablePrice.priceFull;
+//         } else if (priceType === "DISC") {
+//             priceValue = applicablePrice.priceDisc;
+//         } else {
+//             // Jika priceType bukan "FULL" atau "DISC", maka set harga ke 0
+//             priceValue = 0;
+//         }
+//         return priceValue
+//     } else {
+//         // return `Harga untuk bulan ${monthHijri[monthIndex]} ${year} tidak tersedia.`;
+//         return 0
+//     }
+// };
 
 const calculateSyahriyah = async (
     monthIndex: number,
