@@ -198,6 +198,7 @@ export async function GET(request: NextRequest) {
                 const endYear = item.endAt ? item.endAt.match(/\d+/)!![0] : undefined
                 // console.log({ startMonthIndex, startYear, endMonthIndex, endYear });
                 const test = await calculateSyahriyah(startMonthIndex as any, startYear as any, item.type as any, endMonthIndex, endYear)
+                //    @ts-ignore
                 combinedData.unpaidMonths.push(...test.unpaidMonths)
                 combinedData.total += test.total
                 combinedData.count += test.count
@@ -206,6 +207,7 @@ export async function GET(request: NextRequest) {
                 const startYear = item.startAt ? item.startAt.match(/\d+/)!![0] : undefined
                 // console.log({ startMonthIndex, startYear, endMonthIndex, endYear });
                 const test = await calculateSyahriyah(startMonthIndex as any, startYear as any, item.type as any)
+                //    @ts-ignore
                 combinedData.unpaidMonths.push(...test.unpaidMonths)
                 combinedData.total += test.total
                 combinedData.count += test.count

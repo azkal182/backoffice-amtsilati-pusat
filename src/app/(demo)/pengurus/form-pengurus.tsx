@@ -46,7 +46,7 @@ const FormPengurus = () => {
           </SelectTrigger>
           <SelectContent>
             {monthHijri.map((month) => (
-              <SelectItem value={month} className="capitalize">
+              <SelectItem key={month} value={month} className="capitalize">
                 {month}
               </SelectItem>
             ))}
@@ -61,7 +61,9 @@ const FormPengurus = () => {
           </SelectTrigger>
           <SelectContent>
             {getHijriYearRange().map((year) => (
-              <SelectItem value={year.toString()}>{year}</SelectItem>
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

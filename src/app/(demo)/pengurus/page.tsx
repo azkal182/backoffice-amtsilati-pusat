@@ -41,7 +41,7 @@ const PengurusPage = async () => {
         <div>
           <FormPengurus />
           <div className="mt-2">
-            <TablePengurus pengurus={pengurus} />
+            <TablePengurus pengurus={pengurus as any} />
           </div>
         </div>
       </PageContainer>

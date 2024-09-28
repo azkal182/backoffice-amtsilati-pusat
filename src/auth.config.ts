@@ -13,6 +13,7 @@ export default {
                 email: {},
                 password: {},
             },
+            //    @ts-ignore
             authorize: async (credentials) => {
                 let user = null
 

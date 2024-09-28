@@ -9,6 +9,7 @@ import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from 
 
 // 2. Wrapped middleware option
 const { auth } = NextAuth(authConfig)
+//    @ts-ignore
 export default auth(async function middleware(req) {
 
     const { nextUrl } = req;
