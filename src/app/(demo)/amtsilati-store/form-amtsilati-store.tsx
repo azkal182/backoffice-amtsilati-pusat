@@ -22,7 +22,7 @@ import { createStore } from "@/actios/amtsilati-store";
 import ModalFormAmtsilatiStore from "@/app/(demo)/amtsilati-store/moda-form-amtsilati-store";
 
 export type StoreFormData = {
-  id?:string;
+  id?: string;
   title: string;
   description: string;
   maximumPurchase: string;
@@ -42,9 +42,8 @@ const FormAmtsilatiStore = () => {
   const [formData, setFormData] = useState<StoreFormData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState('create'); // 'create' or 'edit'
-  const [selectedData, setSelectedData] = useState<StoreFormData|null>(null);
-
+  const [mode, setMode] = useState("create"); // 'create' or 'edit'
+  const [selectedData, setSelectedData] = useState<StoreFormData | null>(null);
 
   const isDisabled = true;
   const allValues = watch();
@@ -54,7 +53,7 @@ const FormAmtsilatiStore = () => {
       !nonRequiredInputs.includes(key as keyof StoreFormData) && value === ""
     );
   });
-
+  // @ts-ignore
   const handleOpenModal = (mode, data = null) => {
     setMode(mode);
     setSelectedData(data);
@@ -98,8 +97,12 @@ const FormAmtsilatiStore = () => {
       >
         Add New Store
       </Button>
-      <ModalFormAmtsilatiStore isOpen={modalOpen} onClose={setModalOpen} mode={mode} data={selectedData}/>
-
+      <ModalFormAmtsilatiStore
+        isOpen={modalOpen}
+        onClose={setModalOpen}
+        mode={mode}
+        data={selectedData}
+      />
     </div>
   );
 };
