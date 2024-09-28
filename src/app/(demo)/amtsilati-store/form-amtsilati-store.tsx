@@ -19,8 +19,10 @@ import {
 import { ImageBookDropZone } from "@/components/image-book-dropzone";
 import { useEdgeStore } from "@/providers/edge-store-provider";
 import { createStore } from "@/actios/amtsilati-store";
+import ModalFormAmtsilatiStore from "@/app/(demo)/amtsilati-store/moda-form-amtsilati-store";
 
 export type StoreFormData = {
+  id?:string;
   title: string;
   description: string;
   maximumPurchase: string;
@@ -40,6 +42,9 @@ const FormAmtsilatiStore = () => {
   const [formData, setFormData] = useState<StoreFormData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState('create'); // 'create' or 'edit'
+  const [selectedData, setSelectedData] = useState<StoreFormData|null>(null);
+
 
   const isDisabled = true;
   const allValues = watch();
@@ -49,6 +54,12 @@ const FormAmtsilatiStore = () => {
       !nonRequiredInputs.includes(key as keyof StoreFormData) && value === ""
     );
   });
+
+  const handleOpenModal = (mode, data = null) => {
+    setMode(mode);
+    setSelectedData(data);
+    setModalOpen(true);
+  };
   const onSubmit = async (data: StoreFormData) => {
     setLoading(true);
     setFormData(data);
@@ -82,147 +93,13 @@ const FormAmtsilatiStore = () => {
   return (
     <div className="">
       <Button
-        onClick={() => setModalOpen(true)}
+        onClick={() => handleOpenModal("create")}
         className="bg-blue-600 hover:bg-blue-500 text-white"
       >
         Add New Store
       </Button>
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        {/* Modal Content */}
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Add New Store</DialogTitle>
-          </DialogHeader>
+      <ModalFormAmtsilatiStore isOpen={modalOpen} onClose={setModalOpen} mode={mode} data={selectedData}/>
 
-          {/* Form Inside Modal */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                {...register("title", { required: true })}
-                className="w-full"
-                placeholder="Enter book title"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                rows={5}
-                id="description"
-                {...register("description", { required: true })}
-                className="w-full"
-                placeholder="Enter book description"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="maximumPurchase">Maximum Purchase</Label>
-                <Input
-                  id="maximumPurchase"
-                  type="number"
-                  {...register("maximumPurchase", { required: true })}
-                  className="w-full"
-                  placeholder="Enter max purchase"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="pageTotal">Page Total</Label>
-                <Input
-                  id="pageTotal"
-                  type="number"
-                  {...register("pageTotal", { required: true })}
-                  className="w-full"
-                  placeholder="Enter page total"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="isbn">ISBN</Label>
-              <Input
-                id="isbn"
-                {...register("isbn", { required: false })}
-                className="w-full"
-                placeholder="Enter ISBN"
-              />
-            </div>
-
-            <div className="grid grid-cols-3">
-              <div className="col-span-2">
-                <div>
-                  <Label htmlFor="price">Price</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    {...register("price", { required: true })}
-                    className="w-full"
-                    placeholder="Enter price"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="width">Width</Label>
-                  <Input
-                    id="width"
-                    type="number"
-                    {...register("width", { required: true })}
-                    className="w-full"
-                    placeholder="Width (mm)"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="height">Height</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    {...register("height", { required: true })}
-                    className="w-full"
-                    placeholder="Height (mm)"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-center">
-                <div>
-                  <Label className="text-center block">Cover</Label>
-                  <ImageBookDropZone
-                    className="mt-2"
-                    width={100}
-                    height={150}
-                    value={file}
-                    onChange={(file) => {
-                      setFile(file);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer with Submit Button */}
-            <DialogFooter>
-              <div className="w-full">
-                <Button
-                  disabled={isAnyInputEmpty || loading || !file}
-                  type="submit"
-                  className="w-full"
-                >
-                  Submit
-                </Button>
-                {progress !== null && (
-                  <div className="h-3 w-full border rounded overflow-hidden mt-2">
-                    <div
-                      className="h-full bg-slate-400 transition-none duration-150"
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
-                )}
-              </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
