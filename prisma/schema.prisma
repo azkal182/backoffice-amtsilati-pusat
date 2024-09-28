@@ -107,10 +107,13 @@ enum Category {
 }
 
 model PriceSyahriyah {
-    id           Int    @id @default(autoincrement())
-    priceAtHijri String
-    priceFull    Int
-    priceDisc    Int
+    id            Int       @id @default(autoincrement())
+    priceAtHijri  String
+    priceAtMasehi DateTime?
+    priceFull     Int
+    priceDisc     Int
+
+    updatedAt DateTime? @updatedAt
 }
 
 model Pengurus {
@@ -128,7 +131,8 @@ model PengurusStatusHistory {
     pengurus       Pengurus      @relation(fields: [pengurusId], references: [id])
     categoryPrice  CatgoryPrice? @default(FULL)
     startFormHijri String
-    startMasehiAt  DateTime?     @default(now())
+    startMasehiAt  DateTime?
+    updatedAt      DateTime?     @updatedAt
 }
 
 enum CatgoryPrice {

@@ -6,7 +6,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     pages: {
         signIn: "/login"
     },
-    session: { strategy: "jwt" },
+    session: { strategy: 'jwt', maxAge: 60 * 60 },
+    secret: process.env.AUTH_SECRET,
+    trustHost: true,
     callbacks: {
         async session({ token, session }) {
             if (session.user) {

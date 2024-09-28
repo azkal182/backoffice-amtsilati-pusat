@@ -1,26 +1,26 @@
 "use client";
-import { createPengurus } from "@/actios/pengurus";
+import { createSyahriyah } from "@/actios/syahriyah";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
+  FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { CreatePengurusSchema } from "@/schemas/pengurus";
+import { CreateSyahriyahSchema } from "@/schemas/syahriyah";
 import { getHijriYearRange } from "@/utils";
 import { monthHijri } from "@/utils/calculate-payment-group";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,15 +28,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const FormPengurus = () => {
-  const form = useForm<z.infer<typeof CreatePengurusSchema>>({
-    resolver: zodResolver(CreatePengurusSchema)
+const FormSyahriyah = () => {
+  const form = useForm<z.infer<typeof CreateSyahriyahSchema>>({
+    resolver: zodResolver(CreateSyahriyahSchema)
   });
 
-  function onSubmit(values: z.infer<typeof CreatePengurusSchema>) {
-    createPengurus(values).then((data) => {
+  function onSubmit(values: z.infer<typeof CreateSyahriyahSchema>) {
+    createSyahriyah(values).then((data) => {
       if (data.success) {
-        alert(data.data);
         form.reset();
       } else {
         alert("kesalahan sistem");
@@ -48,32 +47,8 @@ const FormPengurus = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid md:grid-cols-6 gap-2 items-end"
+          className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end"
         >
-          <FormField
-            control={form.control}
-            name="nis"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>NIS</FormLabel>
-                <FormControl>
-                  <Input placeholder="NIS Pengurus" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nama</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nama Pengurus" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="monthtHijri"
@@ -107,7 +82,7 @@ const FormPengurus = () => {
             name="yearHijri"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tahun</FormLabel>
+                <FormLabel>Bulan</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -128,23 +103,39 @@ const FormPengurus = () => {
           />
           <FormField
             control={form.control}
-            name="categoryPrice"
+            name="priceFull"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tahun</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="kategori syahriyah" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FULL">Full</SelectItem>
-                    <SelectItem value="DISC">Potongan</SelectItem>
-                    <SelectItem value="FREE">Gratis</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>Full</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Full"
+                    {...field}
+                    type="number"
+                    onChange={(value) =>
+                      field.onChange(parseInt(value.target.value))
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="priceDisc"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Potongan</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Potongan"
+                    {...field}
+                    type="number"
+                    onChange={(value) =>
+                      field.onChange(parseInt(value.target.value))
+                    }
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
@@ -155,4 +146,4 @@ const FormPengurus = () => {
   );
 };
 
-export default FormPengurus;
+export default FormSyahriyah;

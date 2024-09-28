@@ -15,6 +15,7 @@ import Link from "next/link";
 import PageContainer from "@/components/page-container";
 import { getSyahriyahs } from "@/actios/syahriyah";
 import TableSyahriyah from "./table";
+import FormSyahriyah from "./form-syahriyah";
 
 const SyahriyahPage = async () => {
   const syahriyahs = await getSyahriyahs();
@@ -34,7 +35,8 @@ const SyahriyahPage = async () => {
         </BreadcrumbList>
       </Breadcrumb>
       <PageContainer>
-        <div>
+        <FormSyahriyah />
+        <div className="mt-4">
           <TableSyahriyah syahriyahs={syahriyahs} />
         </div>
       </PageContainer>

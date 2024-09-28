@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import moment from "moment-hijri";
-import { calculatePaymentGroup } from "@/utils/calculate-payment-group";
+import { calculatePaymentGroup, parseHijriDate } from "@/utils/calculate-payment-group";
 
 const monthHijri = [
     "muharram",
@@ -19,27 +19,14 @@ const monthHijri = [
 ];
 
 
-// const monthPrices: any = [
-//     { month: "muharram 1444", priceFull: 400000, priceDisc: 350000 },
-//     { month: "muharram 1445", priceFull: 500000, priceDisc: 450000 },
-//     { month: "ramadhan 1445", priceFull: 600000, priceDisc: 550000 },
-//     { month: "muharram 1446", priceFull: 700000, priceDisc: 650000 }
-// ];
-
-
 const findPrice = async (monthIndex: number, year: number, priceType: "FULL" | "DISC" | "FREE"): Promise<number> => {
-    const monthPrices = await db.priceSyahriyah.findMany({ orderBy: { id: "asc" } })
-
+    const monthPrices = await db.priceSyahriyah.findMany({ orderBy: { priceAtMasehi: "asc" } })
     let applicablePrice: any = null;
 
     for (let i = 0; i < monthPrices.length; i++) {
-
-        const [currentMonth, currentYear] = monthPrices[i].priceAtHijri.split(" ");
-        const currentYearNum = parseInt(currentYear, 10);
+        const { month: currentMonth, year: currentYear } = parseHijriDate(monthPrices[i].priceAtHijri);
+        const currentYearNum = currentYear
         const currentMonthIndex = monthHijri.indexOf(currentMonth);
-
-        // console.log(monthPrices[i].priceAtHijri);
-
 
         if (
             year > currentYearNum ||
@@ -52,10 +39,6 @@ const findPrice = async (monthIndex: number, year: number, priceType: "FULL" | "
     }
 
     if (applicablePrice) {
-        const selectedMonth = monthHijri[monthIndex];
-        // const priceValue = priceType === "FULL" ? applicablePrice.priceFull : applicablePrice.priceDisc;
-        // const priceValue = priceType === "FULL" ? applicablePrice.priceFull : applicablePrice.priceDisc;
-        // return `Harga untuk ${selectedMonth} ${year} (tipe: ${priceType}): ${priceValue}`;
         let priceValue;
         if (priceType === "FULL") {
             priceValue = applicablePrice.priceFull;
@@ -115,6 +98,7 @@ const calculateSyahriyah = async (
         lastPrice = await findPrice(startIndex, unpaidYear, priceType)
 
 
+
         unpaidMonths.push({ month: monthName, price: lastPrice, priceType }); // Gunakan lastPrice
         total += lastPrice;
         if (priceType !== "FREE") {
@@ -134,17 +118,6 @@ const calculateSyahriyah = async (
 };
 
 
-
-
-const subtractOneMonth = (bulanIndex: number, tahun: any) => {
-    if (bulanIndex === 0) {
-        // Jika bulan saat ini adalah Muharram, pindah ke Dzulhijjah tahun sebelumnya
-        return { bulan: 11, tahun: tahun - 1 };
-    } else {
-        // Kurangi 1 bulan
-        return { bulan: bulanIndex - 1, tahun };
-    }
-};
 const addOneMonth = (bulanIndex: number, tahun: any) => {
     if (bulanIndex === 11) {
         // Jika bulan saat ini adalah Muharram, pindah ke Dzulhijjah tahun sebelumnya
@@ -154,8 +127,6 @@ const addOneMonth = (bulanIndex: number, tahun: any) => {
         return { bulan: bulanIndex + 1, tahun };
     }
 };
-
-
 
 
 export async function GET(request: NextRequest) {
@@ -233,14 +204,6 @@ export async function GET(request: NextRequest) {
             data: result
         });
     }
-
-
-
-
-
-
-    // const result = await calculateSyahriyah(monthIndex, year, "FULL")
-
 
 
 

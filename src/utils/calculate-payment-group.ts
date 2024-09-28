@@ -43,7 +43,7 @@ function getMonthIndex(month: string): number {
 }
 
 // Fungsi untuk memparsing format "bulan tahun" dengan mencocokkan nama bulan dari array monthHijri
-function parseHijriDate(hijriDate: string): { month: string, year: number } {
+export function parseHijriDate(hijriDate: string): { month: string, year: number } {
     // Cari bulan berdasarkan match dari daftar monthHijri
     const month = monthHijri.find(m => hijriDate.toLowerCase().startsWith(m.toLowerCase()));
 
