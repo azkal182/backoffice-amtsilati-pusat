@@ -152,6 +152,8 @@ model Province {
 model Regency {
     id        Int        @id @default(autoincrement())
     name      String
+    label     String?
+    type      String?
     code      String
     fullCode  String
     districts District[]
