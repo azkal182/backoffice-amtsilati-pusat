@@ -140,3 +140,44 @@ enum CatgoryPrice {
     DISC
     FREE
 }
+
+model Province {
+    id   Int    @id @default(autoincrement())
+    name String
+    code String
+
+    regencies Regency[]
+}
+
+model Regency {
+    id        Int        @id @default(autoincrement())
+    name      String
+    code      String
+    fullCode  String
+    districts District[]
+
+    provinceId Int
+    province   Province @relation(fields: [provinceId], references: [id])
+}
+
+model District {
+    id       Int       @id @default(autoincrement())
+    name     String
+    code     String
+    fullCode String
+    villages Village[]
+
+    regencyId Int
+    regency   Regency @relation(fields: [regencyId], references: [id])
+}
+
+model Village {
+    id         Int    @id @default(autoincrement())
+    name       String
+    code       String
+    fullCode   String
+    postalCode String
+
+    districtId Int
+    district   District @relation(fields: [districtId], references: [id])
+}

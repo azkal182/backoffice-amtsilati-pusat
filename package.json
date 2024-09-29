@@ -9,6 +9,9 @@
         "start": "next start",
         "lint": "next lint"
     },
+    "prisma": {
+        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    },
     "dependencies": {
         "@edgestore/react": "^0.2.2",
         "@edgestore/server": "^0.2.2",
