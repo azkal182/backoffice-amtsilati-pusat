@@ -7,9 +7,13 @@ import * as z from "zod";
 import { login } from "@/actios/login";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useFormStatus } from "react-dom";
+import { Button } from "@/components/ui/button";
 
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>("");
+  const { pending } = useFormStatus();
+
   const {
     register,
     handleSubmit,
@@ -81,12 +85,14 @@ const LoginForm = () => {
           )}
         </div>
         <div className="relative mt-4">
-          <button
+          <Button
+            disabled={pending}
             type="submit"
-            className="bg-cyan-500 text-white rounded-md px-2 py-1 w-full"
+            className="w-full"
+            // className="bg-cyan-500 text-white rounded-md px-2 py-1 w-full"
           >
             Login
-          </button>
+          </Button>
         </div>
       </form>
     </>

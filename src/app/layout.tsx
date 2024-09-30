@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
-
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -29,6 +29,7 @@ export default function RootLayout({
     <SessionProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={GeistSans.className}>
+          <NextTopLoader />
           <EdgeStoreProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {children}

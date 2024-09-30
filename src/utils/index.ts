@@ -16,7 +16,7 @@ export function getHijriYearRange() {
     const yearRange = [];
 
     // Menambahkan 3 tahun ke belakang dan 3 tahun ke depan
-    for (let i = currentYear - 2; i <= currentYear + 2; i++) {
+    for (let i = currentYear - 3; i <= currentYear + 2; i++) {
         yearRange.push(i);
     }
 
