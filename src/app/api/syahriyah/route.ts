@@ -128,7 +128,17 @@ const calculateSyahriyah = async (
     endYear?: string
 ) => {
     const currentHijriDate = moment().format('iYYYY-iM'); // Mengambil tahun dan bulan hijriyah saat ini
-    const [currentYear, currentMonth] = currentHijriDate.split('-').map(Number); // Pisahkan tahun dan bulan hijriyah saat ini
+    // const [currentYear, currentMonth] = currentHijriDate.split('-').map(Number); // Pisahkan tahun dan bulan hijriyah saat ini
+    let [currentYear, currentMonth] = currentHijriDate.split('-').map(Number); // Pisahkan tahun dan bulan hijriyah saat ini
+
+    // Membuat tanggal Hijriyah saat ini menggunakan moment hijri
+    const hijriDate = moment().iYear(currentYear).iMonth(currentMonth - 1); // Bulan di moment mulai dari 0, jadi dikurangi 1
+
+    // Tambahkan 1 bulan
+    const nextHijriDate = hijriDate.add(1, 'iMonth');
+
+    // Update currentMonth dengan nilai bulan yang baru
+    currentMonth = nextHijriDate.iMonth() + 1; // iMonth dimulai dari 0, jadi tambahkan 1 agar sesuai dengan format manusia
 
     // Jika endMonthIndex dan endYear tidak diberikan, gunakan waktu hijriyah saat ini
     const targetEndMonthIndex = endMonthIndex !== undefined ? endMonthIndex : currentMonth - 1;
