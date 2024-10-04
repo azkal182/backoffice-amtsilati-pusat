@@ -26,7 +26,7 @@ jobs:
 
       - name: Run Prisma Migrations
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }} # Menggunakan secrets
+          DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3307/backoffice"
           EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
           EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Next.js application
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }} # Menggunakan secrets
+          DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3307/backoffice"
           EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
           EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
