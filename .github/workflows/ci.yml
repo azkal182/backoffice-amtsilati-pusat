@@ -52,13 +52,19 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 178.128.17.214 >> ~/.ssh/known_hosts
 
+      - name: Copy build files to VPS
+        run: |
+          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
+          rsync -avz --delete public/ root@178.128.17.214:/root/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
+
       - name: Deploy to VPS
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
-            # Verifikasi bahwa direktori ada
+            # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
             if [ ! -d "/root/project/backoffice" ]; then
-              echo "Directory /root/project/backoffice does not exist."
-              exit 1
+              echo "Directory /root/project/backoffice does not exist. Creating directory..."
+              mkdir -p /root/project/backoffice
             fi
 
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
@@ -68,20 +74,10 @@ jobs:
               echo "PM2 application 'backoffice' not found, skipping stop."
             fi
 
-            # Hapus folder build lama
-            rm -rf /root/project/backoffice/.next
-
-            # Masuk ke folder deployment
+            # Install dependencies tanpa melakukan build di VPS
             cd /root/project/backoffice/
+            yarn install --production
 
-            # Install dependencies
-            yarn install
-
-            # Pastikan skrip ada dan jalankan PM2
+            # Restart aplikasi dengan PM2 tanpa build
             pm2 start npm --name "backoffice" -- run start
           EOF
-
-      - name: Copy build files to server
-        run: |
-          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
-          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
