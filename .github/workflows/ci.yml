@@ -3,7 +3,7 @@ name: CI/CD Next.js with Prisma
 on:
   push:
     branches:
-      - staging # Ganti dengan branch yang Anda gunakan untuk deploy
+      - staging
 
 jobs:
   build:
@@ -48,6 +48,9 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan 178.128.17.214 >> ~/.ssh/known_hosts
 
       - name: Deploy to VPS
         run: |
