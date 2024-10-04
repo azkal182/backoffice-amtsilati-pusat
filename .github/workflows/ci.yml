@@ -27,12 +27,7 @@ jobs:
       - name: Run Prisma Migrations
         env:
           DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3306/backoffice"
-          EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
-          EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
-        run: npx prisma migrate deploy || sleep 5 && npx prisma migrate deploy
+        run: npx prisma migrate deploy || sleep 10 && npx prisma migrate deploy
 
       - name: Build Next.js application
         env:
@@ -40,8 +35,8 @@ jobs:
           EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
           EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
+          NEXTAUTH_URL: "https://amtsilati.online"
+          AUTH_TRUST_HOST: "https://amtsilati.online"
         run: yarn build
 
       - name: Add SSH key
