@@ -19,7 +19,7 @@ jobs:
           node-version: "18.x"
 
       - name: Install dependencies
-        run: yarn install # Menggunakan Yarn untuk menginstal dependencies
+        run: yarn install
 
       - name: Print DATABASE_URL
         run: echo ${{ secrets.DATABASE_URL }}
@@ -42,15 +42,16 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
-        run: yarn build # Menggunakan Yarn untuk build aplikasi
-      - name: Deploy to VPS
-        env:
-          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} # Menggunakan secret untuk password VPS
-        run: |
-          # Menggunakan sshpass untuk mengotentikasi dengan password
-          sudo apt-get install -y sshpass # Instal sshpass
+        run: yarn build
 
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -tt root@178.128.17.214 << 'EOF'
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to VPS
+        run: |
+          ssh root@178.128.17.214 << 'EOF'
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
             pm2 stop backoffice || true
 
@@ -60,13 +61,14 @@ jobs:
             # Masuk ke folder deployment
             cd /root/project/backoffice/
 
-            # Install dependencies (jika perlu)
-            yarn install  # Menggunakan Yarn untuk menginstal dependencies
+            # Install dependencies
+            yarn install
 
             # Restart aplikasi
             pm2 start backoffice
           EOF
 
-          # Copy file hasil build ke server (di luar SSH untuk efisiensi)
+      - name: Copy build files to server
+        run: |
           rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
           rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
