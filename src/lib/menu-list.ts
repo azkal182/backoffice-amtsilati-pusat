@@ -81,6 +81,13 @@ export function getMenuList(pathname: string): Group[] {
                     active: pathname.includes("/syahriyah"),
                     icon: CreditCard,
                     submenus: []
+                },
+                {
+                    href: "/transactions",
+                    label: "Transaksi",
+                    active: pathname.includes("/transactions"),
+                    icon: CreditCard,
+                    submenus: []
                 }
             ]
         },

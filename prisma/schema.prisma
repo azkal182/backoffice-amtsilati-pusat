@@ -183,3 +183,36 @@ model Village {
     districtId Int
     district   District @relation(fields: [districtId], references: [id])
 }
+
+model Transaction {
+    id              Int                 @id @default(autoincrement())
+    orderId         String
+    nis             String
+    noRek           String
+    name            String
+    transactionDate DateTime            @default(now())
+    totalAmount     Float
+    paymentCode     String
+    paymentMethod   String
+    status          TransactionStatus
+    traceId         String
+    details         TransactionDetail[] @relation("TransactionDetails")
+}
+
+enum TransactionStatus {
+    PAID
+    REFUNDED
+    CANCELLED
+    FAILURE
+    PENDING
+    EXPIRED
+}
+
+model TransactionDetail {
+    id            Int         @id @default(autoincrement())
+    sandiId       String
+    description   String
+    total         Float
+    transactionId Int
+    transaction   Transaction @relation("TransactionDetails", fields: [transactionId], references: [id])
+}

@@ -15,8 +15,7 @@ export async function GET(request: NextRequest) {
     const items = await db.poster.findMany({
         where: {
             description: {
-                contains: query, // Case-insensitive query
-                mode: "insensitive"
+                contains: query,
             },
             publish: true
         },
@@ -32,9 +31,9 @@ export async function GET(request: NextRequest) {
         where: {
             description: {
                 contains: query,
-                mode: "insensitive"
-            }
-        }
+            },
+            publish: true
+        },
     });
 
     // Calculate total pages
