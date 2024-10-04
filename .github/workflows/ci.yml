@@ -51,7 +51,7 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          ssh root@178.128.17.214 << 'EOF'
+          ssh -tt root@178.128.17.214 << 'EOF'
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
             pm2 stop backoffice || true
 
