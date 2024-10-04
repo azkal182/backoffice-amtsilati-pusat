@@ -43,7 +43,6 @@ jobs:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
         run: yarn build # Menggunakan Yarn untuk build aplikasi
-
       - name: Deploy to VPS
         env:
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} # Menggunakan secret untuk password VPS
@@ -51,16 +50,12 @@ jobs:
           # Menggunakan sshpass untuk mengotentikasi dengan password
           sudo apt-get install -y sshpass # Instal sshpass
 
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh root@178.128.17.214 << 'EOF'
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -tt root@178.128.17.214 << 'EOF'
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
             pm2 stop backoffice || true
 
             # Hapus folder build lama
             rm -rf /root/project/backoffice/.next
-
-            # Copy file hasil build ke server
-            rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
-            rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
 
             # Masuk ke folder deployment
             cd /root/project/backoffice/
@@ -71,3 +66,7 @@ jobs:
             # Restart aplikasi
             pm2 start backoffice
           EOF
+
+          # Copy file hasil build ke server (di luar SSH untuk efisiensi)
+          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
+          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
