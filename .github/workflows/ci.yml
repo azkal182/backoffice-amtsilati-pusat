@@ -32,7 +32,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
-        run: npx prisma migrate deploy
+        run: npx prisma migrate deploy || sleep 5 && npx prisma migrate deploy
 
       - name: Build Next.js application
         env:
