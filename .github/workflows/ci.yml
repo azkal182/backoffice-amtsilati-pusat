@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Print current branch
+        run: echo ${{ github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -56,6 +58,7 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
+            git checkout staging
             # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
             if [ ! -d "/root/project/backoffice" ]; then
               echo "Directory /root/project/backoffice does not exist. Creating directory..."
