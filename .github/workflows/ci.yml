@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: yarn install # Menggunakan Yarn untuk menginstal dependencies
 
+      - name: Print DATABASE_URL
+        run: echo ${{ secrets.DATABASE_URL }}
+
       - name: Run Prisma Migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }} # Menggunakan secrets
