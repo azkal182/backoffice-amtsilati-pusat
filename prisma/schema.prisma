@@ -185,18 +185,19 @@ model Village {
 }
 
 model Transaction {
-    id              Int                 @id @default(autoincrement())
+    id              Int               @id @default(autoincrement())
     orderId         String
     nis             String
     noRek           String
     name            String
-    transactionDate DateTime            @default(now())
+    transactionDate DateTime          @default(now())
     totalAmount     Float
     paymentCode     String
     paymentMethod   String
     status          TransactionStatus
     traceId         String
-    details         TransactionDetail[] @relation("TransactionDetails")
+
+    details TransactionDetail[] @relation("TransactionDetails")
 }
 
 enum TransactionStatus {
