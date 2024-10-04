@@ -79,5 +79,6 @@ jobs:
             yarn install --production
 
             # Restart aplikasi dengan PM2 tanpa build
-            pm2 start npm --name "backoffice" -- run start
+            pm2 start npm --name "backoffice" -- start -- -p 80
+
           EOF
