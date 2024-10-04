@@ -55,8 +55,18 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
+            # Verifikasi bahwa direktori ada
+            if [ ! -d "/root/project/backoffice" ]; then
+              echo "Directory /root/project/backoffice does not exist."
+              exit 1
+            fi
+
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
-            pm2 stop backoffice || true
+            if pm2 describe backoffice > /dev/null; then
+              pm2 stop backoffice
+            else
+              echo "PM2 application 'backoffice' not found, skipping stop."
+            fi
 
             # Hapus folder build lama
             rm -rf /root/project/backoffice/.next
@@ -67,8 +77,8 @@ jobs:
             # Install dependencies
             yarn install
 
-            # Restart aplikasi
-            pm2 start backoffice
+            # Pastikan skrip ada dan jalankan PM2
+            pm2 start npm --name "backoffice" -- run start
           EOF
 
       - name: Copy build files to server
