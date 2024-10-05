@@ -82,16 +82,27 @@ jobs:
 
             yarn install --production
 
-            # Tulis file .env menggunakan variabel dan secrets dari GitHub Actions
-            cat > .env <<EOL
-            DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3306/backoffice"
-            EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
-            EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
-            AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-            NEXTAUTH_URL: "https://amtsilati.online"
-            AUTH_TRUST_HOST: "https://amtsilati.online"
-            CALLBACK: "https://https://amtsilati.online/api/transactions/webhook"
-            EOL
+            # Menimpa atau mengganti variabel di file .env
+            sed -i '/^DATABASE_URL=/d' .env
+            echo "DATABASE_URL=\"mysql://azkal:azkal@178.128.17.214:3306/backoffice\"" >> .env
+
+            sed -i '/^EDGE_STORE_ACCESS_KEY=/d' .env
+            echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
+
+            sed -i '/^EDGE_STORE_SECRET_KEY=/d' .env
+            echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
+
+            sed -i '/^AUTH_SECRET=/d' .env
+            echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+
+            sed -i '/^NEXTAUTH_URL=/d' .env
+            echo "NEXTAUTH_URL=\"https://amtsilati.online\"" >> .env
+
+            sed -i '/^AUTH_TRUST_HOST=/d' .env
+            echo "AUTH_TRUST_HOST=\"https://amtsilati.online\"" >> .env
+
+            sed -i '/^CALLBACK=/d' .env
+            echo "CALLBACK=\"https://amtsilati.online/api/transactions/webhook\"" >> .env
 
             # Restart aplikasi dengan PM2 tanpa build
             pm2 start npm --name "backoffice" -- start -- -p 3000
