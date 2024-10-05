@@ -79,7 +79,7 @@ jobs:
             yarn install --production
 
             # Restart aplikasi dengan PM2 tanpa build
-            pm2 start npm --name "backoffice" -- start -- -p 80
+            pm2 start npm --name "backoffice" -- start -- -p 4000
             # Keluar dari SSH
             exit
           EOF
