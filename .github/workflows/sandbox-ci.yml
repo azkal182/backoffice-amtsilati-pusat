@@ -1,0 +1,85 @@
+name: CI/CD Next.js with Prisma
+
+on:
+  push:
+    branches:
+      - sandbox
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Print current branch
+        run: echo ${{ github.ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Print DATABASE_URL
+        run: echo ${{ secrets.DATABASE_URL }}
+
+      - name: Run Prisma Migrations
+        env:
+          DATABASE_URL: "mysql://alan:alan@165.22.106.176:3306/backoffice"
+        run: npx prisma migrate deploy || sleep 10 && npx prisma migrate deploy
+
+      - name: Build Next.js application
+        env:
+          DATABASE_URL: "mysql://alan:alan@165.22.106.176:3306/backoffice"
+          EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
+          EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          NEXTAUTH_URL: "http://165.22.106.176:4000"
+          AUTH_TRUST_HOST: "http://165.22.106.176:4000"
+        run: yarn build
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan 165.22.106.176 >> ~/.ssh/known_hosts
+
+      - name: Copy build files to VPS
+        run: |
+          rsync -avz --delete .next/ root@165.22.106.176:/root/project/backoffice/.next/
+          rsync -avz --delete public/ root@165.22.106.176:/root/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock root@165.22.106.176:/root/project/backoffice/
+
+      - name: Deploy to VPS
+        run: |
+          ssh -tt azkal@165.22.106.176 << 'EOF'
+            git checkout sandbox
+
+            # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
+            if [ ! -d "/root/project/backoffice" ]; then
+              echo "Directory /root/project/backoffice does not exist. Creating directory..."
+              mkdir -p /root/project/backoffice
+            fi
+
+            # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
+            if pm2 describe backoffice > /dev/null; then
+              pm2 stop backoffice
+              pm2 delete backoffice
+            else
+              echo "PM2 application 'backoffice' not found, skipping stop."
+            fi
+
+            # Install dependencies tanpa melakukan build di VPS
+            cd /root/project/backoffice/
+            yarn install --production
+
+            # Restart aplikasi dengan PM2 tanpa build
+            pm2 start npm --name "backoffice" -- start -- -p 80
+            # Keluar dari SSH
+            exit
+          EOF
