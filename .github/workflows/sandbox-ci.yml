@@ -51,19 +51,19 @@ jobs:
 
       - name: Copy build files to VPS
         run: |
-          rsync -avz --delete .next/ azkal@165.22.106.176:/azkal/project/backoffice/.next/
-          rsync -avz --delete public/ azkal@165.22.106.176:/azkal/project/backoffice/public/
-          rsync -avz --delete package.json yarn.lock azkal@165.22.106.176:/azkal/project/backoffice/
+          rsync -avz --delete .next/ azkal@165.22.106.176:/home/azkal/project/backoffice/.next/
+          rsync -avz --delete public/ azkal@165.22.106.176:/home/azkal/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock azkal@165.22.106.176:/home/azkal/project/backoffice/
 
       - name: Deploy to VPS
         run: |
           ssh -tt azkal@165.22.106.176 << 'EOF'
             git checkout sandbox
 
-            # Verifikasi bahwa direktori /azkal/project/backoffice ada, jika tidak clone repo
-            if [ ! -d "/azkal/project/backoffice" ]; then
-              echo "Directory /azkal/project/backoffice does not exist. Creating directory..."
-              mkdir -p /azkal/project/backoffice
+            # Verifikasi bahwa direktori /home/azkal/project/backoffice ada, jika tidak clone repo
+            if [ ! -d "/home/azkal/project/backoffice" ]; then
+              echo "Directory /home/azkal/project/backoffice does not exist. Creating directory..."
+              mkdir -p /home/azkal/project/backoffice
             fi
 
             # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
@@ -75,7 +75,7 @@ jobs:
             fi
 
             # Install dependencies tanpa melakukan build di VPS
-            cd /azkal/project/backoffice/
+            cd /home/azkal/project/backoffice/
             yarn install --production
 
             # Restart aplikasi dengan PM2 tanpa build
