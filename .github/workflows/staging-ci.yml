@@ -60,6 +60,7 @@ jobs:
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
             git checkout staging
+            git fetch origin staging
 
             # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
             if [ ! -d "/root/project/backoffice" ]; then
@@ -80,7 +81,7 @@ jobs:
             yarn install --production
 
             # Restart aplikasi dengan PM2 tanpa build
-            pm2 start npm --name "backoffice" -- start -- -p 80
+            pm2 start npm --name "backoffice" -- start -- -p 3000
             # Keluar dari SSH
             exit
           EOF
