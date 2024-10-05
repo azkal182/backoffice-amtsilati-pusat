@@ -184,9 +184,15 @@ model Village {
     district   District @relation(fields: [districtId], references: [id])
 }
 
+model PaymentMethod {
+    id       String @id @default(cuid())
+    name     String
+    categoty String
+}
+
 model Transaction {
     id              Int               @id @default(autoincrement())
-    orderId         String
+    orderId         String            @unique
     nis             String
     noRek           String
     name            String
@@ -196,6 +202,7 @@ model Transaction {
     paymentMethod   String
     status          TransactionStatus
     traceId         String
+    paidAt          DateTime?
 
     details TransactionDetail[] @relation("TransactionDetails")
 }

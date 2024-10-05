@@ -23,18 +23,9 @@ export const formatRibuan = (value: string): string => {
     maximumFractionDigits: 2
   }).format(number);
 };
-const dummy = {
-  nis: "1234",
-  noRek: "1234",
-  nama: "AZKAL",
-  status: "PENDING",
-  nominal: "100000",
-  keterangan: "testing"
-};
 function TableComponent({ data }: { data: any }) {
   return (
     <div>
-      {/*
       <Table>
         <TableCaption>A list of your recent posters.</TableCaption>
         <TableHeader>
@@ -44,7 +35,7 @@ function TableComponent({ data }: { data: any }) {
             <TableHead>NIS</TableHead>
             <TableHead>No Rek</TableHead>
             <TableHead>Nama</TableHead>
-            <TableHead>Keterangan</TableHead>
+            <TableHead>Paymentcode</TableHead>
             <TableHead>Nominal</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
@@ -56,9 +47,9 @@ function TableComponent({ data }: { data: any }) {
               <TableCell>{item.orderId}</TableCell>
               <TableCell>{item.nis}</TableCell>
               <TableCell>{item.noRek}</TableCell>
-              <TableCell>{item.nama}</TableCell>
-              <TableCell>{item?.keterangan}</TableCell>
-              <TableCell>{formatRibuan(item.nominal)}</TableCell>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>{item.paymentCode}</TableCell>
+              <TableCell>{formatRibuan(item.totalAmount)}</TableCell>
               <TableCell>
                 <div
                   className={`p-0.5 ${
@@ -72,10 +63,6 @@ function TableComponent({ data }: { data: any }) {
           ))}
         </TableBody>
       </Table>
-*/}
-      <div>
-        <Button onClick={() => testCreate()}>test transaction</Button>
-      </div>
     </div>
   );
 }

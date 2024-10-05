@@ -139,6 +139,15 @@ CREATE TABLE `Village` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `PaymentMethod` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `categoty` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Transaction` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `orderId` VARCHAR(191) NOT NULL,
@@ -151,7 +160,9 @@ CREATE TABLE `Transaction` (
     `paymentMethod` VARCHAR(191) NOT NULL,
     `status` ENUM('PAID', 'REFUNDED', 'CANCELLED', 'FAILURE', 'PENDING', 'EXPIRED') NOT NULL,
     `traceId` VARCHAR(191) NOT NULL,
+    `paidAt` DATETIME(3) NULL,
 
+    UNIQUE INDEX `Transaction_orderId_key`(`orderId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
