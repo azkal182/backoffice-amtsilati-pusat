@@ -59,8 +59,7 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
-            git checkout staging
-            git fetch origin staging
+
 
             # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
             if [ ! -d "/root/project/backoffice" ]; then
@@ -78,6 +77,9 @@ jobs:
 
             # Install dependencies tanpa melakukan build di VPS
             cd /root/project/backoffice/
+            git checkout staging
+            git fetch origin staging
+
             yarn install --production
 
             # Restart aplikasi dengan PM2 tanpa build
