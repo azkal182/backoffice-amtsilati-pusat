@@ -11,7 +11,16 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import React, { useState } from "react";
+import { formatRibuan } from "./table";
 
 function generateRandomOrderIdWithDate(length = 5) {
   // Mendapatkan tanggal saat ini
@@ -39,7 +48,7 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     nis: "",
     noRek: "",
     name: "",
-    total: "",
+    total: 0,
     paymentMethod: "",
     item: []
   });
@@ -74,6 +83,27 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     testCreate(order);
   };
 
+  //   const handleAddItem = () => {
+  //     // Validasi item baru sebelum ditambahkan
+  //     if (!newItem.category || !newItem.keterangan || !newItem.jumlah) {
+  //       alert("Semua field item harus diisi.");
+  //       return;
+  //     }
+
+  //     // Tambahkan item baru ke dalam state order.item
+  //     setOrder((prevOrder: any) => ({
+  //       ...prevOrder,
+  //       item: [...prevOrder.item, newItem]
+  //     }));
+
+  //     // Reset form item setelah menambahkannya
+  //     setNewItem({
+  //       category: "",
+  //       keterangan: "",
+  //       jumlah: ""
+  //     });
+  //   };
+
   const handleAddItem = () => {
     // Validasi item baru sebelum ditambahkan
     if (!newItem.category || !newItem.keterangan || !newItem.jumlah) {
@@ -82,10 +112,20 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     }
 
     // Tambahkan item baru ke dalam state order.item
-    setOrder((prevOrder: any) => ({
-      ...prevOrder,
-      item: [...prevOrder.item, newItem]
-    }));
+    setOrder((prevOrder: any) => {
+      const updatedItems = [...prevOrder.item, newItem];
+
+      // Hitung total dari item yang sudah ada + item baru
+      const total = updatedItems.reduce((acc, currentItem) => {
+        return acc + Number(currentItem.jumlah);
+      }, 0);
+
+      return {
+        ...prevOrder,
+        item: updatedItems,
+        total: total.toString() // Simpan total sebagai string jika diperlukan
+      };
+    });
 
     // Reset form item setelah menambahkannya
     setNewItem({
@@ -100,7 +140,12 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
       {/* <form> */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-auto">
         <Card>
-          <CardHeader>Order - #{orderId}</CardHeader>
+          <CardHeader>
+            <div>
+              <div>Order - #{orderId}</div>
+              <div>Total : Rp. {formatRibuan(order.total)}</div>
+            </div>
+          </CardHeader>
           <CardContent>
             <div>
               <Label>NIS</Label>
@@ -137,19 +182,6 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
                   setOrder((prevOrder: any) => ({
                     ...prevOrder,
                     name: e.target.value
-                  }));
-                }}
-              />
-            </div>
-            <div>
-              <Label>Total</Label>
-              <Input
-                placeholder="Total"
-                value={order.total}
-                onChange={(e) => {
-                  setOrder((prevOrder: any) => ({
-                    ...prevOrder,
-                    total: e.target.value
                   }));
                 }}
               />
@@ -230,11 +262,33 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
                 }}
               />
             </div>
-            <Button onClick={handleAddItem}>Tambah Item</Button>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>No</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Nominal</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {order.item?.map((item: any, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{item.category}</TableCell>
+                    <TableCell>{item.jumlah}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Button className="mt-4" onClick={handleAddItem}>
+              Tambah Item
+            </Button>
           </CardContent>
         </Card>
       </div>
-      <Button onClick={handleSubmit}>submit</Button>
+      <Button className="mt-4" onClick={handleSubmit}>
+        submit
+      </Button>
       {/* </form> */}
     </div>
   );

@@ -39,6 +39,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: "https://amtsilati.online"
           AUTH_TRUST_HOST: "https://amtsilati.online"
+          CALLBACK: "https://local.amtsilati.online/api/transactions/webhook"
         run: yarn build
 
       - name: Add SSH key

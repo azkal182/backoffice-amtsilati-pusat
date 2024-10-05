@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request: NextRequest) {
     const res = await request.json()
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
         }
     })
 
+    revalidatePath("/transactions")
 
     return NextResponse.json({
         data: "createData"

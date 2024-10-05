@@ -2,20 +2,11 @@
 
 import { db } from "@/lib/db";
 import axios from "axios";
-// const dummy = {
-//     nis: "1234",
-//     orderId: "ourtr6566",
-//     noRek: "1234",
-//     nama: "AZKAL",
-//     status: "PENDING",
-//     nominal: "50000",
-//     keterangan: "testing"
-// }
+import { revalidatePath } from "next/cache";
 
 const splitName = (fullName: string) => {
     // Split nama berdasarkan spasi
     const nameParts = fullName.split(' ');
-
     // Jika hanya ada satu kata, set lastName sama dengan firstName
     if (nameParts.length === 1) {
         return {
@@ -57,9 +48,9 @@ export const testCreate = async (data: any) => {
                 }))
             },
             url: {
-                successUrl: "https://local.amtsilati.online/api/transactions/webhook",
-                failUrl: "https://local.amtsilati.online/api/transactions/webhook",
-                callbackUrl: "https://local.amtsilati.online/api/transactions/webhook"
+                successUrl: process.env.CALLBACK,
+                failUrl: process.env.CALLBACK,
+                callbackUrl: process.env.CALLBACK
             },
             sourceOfFunds: {
                 type: data.paymentMethod
@@ -70,7 +61,7 @@ export const testCreate = async (data: any) => {
             }
         })
         if (res) {
-            console.log(res.data)
+            // console.log(res.data)
             await db.transaction.create({
                 data: {
                     status: "PENDING",
@@ -94,6 +85,10 @@ export const testCreate = async (data: any) => {
                     }
                 }
             })
+
+            revalidatePath("/transactions")
+
+            return { data: res.data }
         }
 
 
