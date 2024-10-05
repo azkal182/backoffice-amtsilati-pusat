@@ -39,7 +39,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: "https://amtsilati.online"
           AUTH_TRUST_HOST: "https://amtsilati.online"
-          CALLBACK: "https://local.amtsilati.online/api/transactions/webhook"
+          CALLBACK: "https://amtsilati.online/api/transactions/webhook"
         run: yarn build
 
       - name: Add SSH key
@@ -78,9 +78,20 @@ jobs:
             # Install dependencies tanpa melakukan build di VPS
             cd /root/project/backoffice/
             git checkout staging
-            git fetch origin staging
+            git pull origin staging
 
             yarn install --production
+
+            # Tulis file .env menggunakan variabel dan secrets dari GitHub Actions
+            cat > .env <<EOL
+            DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3306/backoffice"
+            EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
+            EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
+            AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+            NEXTAUTH_URL: "https://amtsilati.online"
+            AUTH_TRUST_HOST: "https://amtsilati.online"
+            CALLBACK: "https://https://amtsilati.online/api/transactions/webhook"
+            EOL
 
             # Restart aplikasi dengan PM2 tanpa build
             pm2 start npm --name "backoffice" -- start -- -p 3000
