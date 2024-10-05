@@ -25,8 +25,12 @@ export const login = async (values: FormData) => {
         return { success: 'success' };
     } catch (error) {
         if (error instanceof AuthError) {
+            console.log({ 'error type': error.type });
+
             switch (error.type) {
                 case 'CredentialsSignin':
+                    return { error: 'Invalid Credentials' };
+                case 'CallbackRouteError':
                     return { error: 'Invalid Credentials' };
                 default:
                     return { error: 'Something went wrong!' };
