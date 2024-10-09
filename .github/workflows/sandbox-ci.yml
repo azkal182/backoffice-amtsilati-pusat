@@ -93,7 +93,7 @@ jobs:
 
               # Update variabel di file .env
               sed -i '/^DATABASE_URL=/d' .env
-              echo "DATABASE_URL=\"mysql://azkal:azkal@localhost:3306/backoffice\"" >> .env
+              echo "DATABASE_URL=\"mysql://alan:alan@165.22.106.176:3306/backoffice\"" >> .env
 
               sed -i '/^EDGE_STORE_ACCESS_KEY=/d' .env
               echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
