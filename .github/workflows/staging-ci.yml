@@ -39,6 +39,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: "https://amtsilati.online"
           AUTH_TRUST_HOST: "https://amtsilati.online"
+          CALLBACK: "https://amtsilati.online/api/transactions/webhook"
         run: yarn build
 
       - name: Add SSH key
@@ -49,37 +50,73 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 178.128.17.214 >> ~/.ssh/known_hosts
 
+      - name: Deploy to VPS
+        run: |
+          ssh -tt root@178.128.17.214 << 'EOF'
+              # Verifikasi apakah direktori /root/project/backoffice ada
+              if [ ! -d "/root/project/backoffice" ]; then
+              echo "Directory /root/project/backoffice does not exist. Cloning project..."
+              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /root/project/backoffice
+              cd /root/project/backoffice
+              git checkout staging
+              else
+              echo "Directory /root/project/backoffice exists. Pulling latest changes..."
+              cd /root/project/backoffice
+              git checkout staging
+              git pull origin staging
+              fi
+
+              exit
+          EOF
+
       - name: Copy build files to VPS
         run: |
           rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
           rsync -avz --delete public/ root@178.128.17.214:/root/project/backoffice/public/
           rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
 
-      - name: Deploy to VPS
+      - name: Install Dependencies and Restart App
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
-            git checkout staging
+              # Masuk ke direktori project
+              cd /root/project/backoffice
 
-            # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
-            if [ ! -d "/root/project/backoffice" ]; then
-              echo "Directory /root/project/backoffice does not exist. Creating directory..."
-              mkdir -p /root/project/backoffice
-            fi
-
-            # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
-            if pm2 describe backoffice > /dev/null; then
+              # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
+              if pm2 describe backoffice > /dev/null; then
               pm2 stop backoffice
               pm2 delete backoffice
-            else
+              else
               echo "PM2 application 'backoffice' not found, skipping stop."
-            fi
+              fi
 
-            # Install dependencies tanpa melakukan build di VPS
-            cd /root/project/backoffice/
-            yarn install --production
+              # Install dependencies tanpa build
+              yarn install --production
 
-            # Restart aplikasi dengan PM2 tanpa build
-            pm2 start npm --name "backoffice" -- start -- -p 80
-            # Keluar dari SSH
-            exit
+              # Update variabel di file .env
+              sed -i '/^DATABASE_URL=/d' .env
+              echo "DATABASE_URL=\"mysql://azkal:azkal@localhost:3306/backoffice\"" >> .env
+
+              sed -i '/^EDGE_STORE_ACCESS_KEY=/d' .env
+              echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
+
+              sed -i '/^EDGE_STORE_SECRET_KEY=/d' .env
+              echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
+
+              sed -i '/^AUTH_SECRET=/d' .env
+              echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+
+              sed -i '/^NEXTAUTH_URL=/d' .env
+              echo "NEXTAUTH_URL=\"https://amtsilati.online\"" >> .env
+
+              sed -i '/^AUTH_TRUST_HOST=/d' .env
+              echo "AUTH_TRUST_HOST=\"https://amtsilati.online\"" >> .env
+
+              sed -i '/^CALLBACK=/d' .env
+              echo "CALLBACK=\"https://amtsilati.online/api/transactions/webhook\"" >> .env
+
+              # Restart aplikasi dengan PM2 tanpa build
+              pm2 start npm --name "backoffice" -- start -- -p 3000
+
+              # Keluar dari SSH
+              exit
           EOF

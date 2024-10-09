@@ -3,6 +3,8 @@ import Provinces from "./json/provinsi.json";
 import Regencies from "./json/kabupaten.json";
 import Districts from "./json/kecamatan.json";
 import Villages from "./json/kelurahan.json";
+import PaymentMethods from "./json/payment-methods.json";
+
 const prisma = new PrismaClient()
 
 type village = {
@@ -15,6 +17,14 @@ type village = {
 }
 
 async function main() {
+
+    for (const method of PaymentMethods) {
+        await prisma.paymentMethod.upsert({
+            where: { id: method.id }, // Menentukan unik berdasarkan ID
+            update: { name: method.name }, // Update jika sudah ada
+            create: { id: method.id, name: method.name, categoty: method.category.toLowerCase(), shortName: method.name.replace('Virtual Account', 'VA') }, // Buat baru jika belum ada
+        });
+    }
 
     await prisma.user.createMany({
         data: [
