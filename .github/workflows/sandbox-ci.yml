@@ -105,13 +105,13 @@ jobs:
               echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
 
               sed -i '/^NEXTAUTH_URL=/d' .env
-              echo "NEXTAUTH_URL=\"https://amtsilati.online\"" >> .env
+              echo "NEXTAUTH_URL=\"https://backapp.amtsilatipusat.com\"" >> .env
 
               sed -i '/^AUTH_TRUST_HOST=/d' .env
-              echo "AUTH_TRUST_HOST=\"https://amtsilati.online\"" >> .env
+              echo "AUTH_TRUST_HOST=\"https://backapp.amtsilatipusat.com\"" >> .env
 
               sed -i '/^CALLBACK=/d' .env
-              echo "CALLBACK=\"https://amtsilati.online/api/transactions/webhook\"" >> .env
+              echo "CALLBACK=\"https://backapp.amtsilatipusat.com/api/transactions/webhook\"" >> .env
 
               # Restart aplikasi dengan PM2 tanpa build
               pm2 start npm --name "backoffice" -- start -- -p 4000
