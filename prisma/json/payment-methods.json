@@ -2,12 +2,7 @@
     {
         "id": "alfamart",
         "name": "Alfamart",
-        "category": "E-Wallet"
-    },
-    {
-        "id": "cc",
-        "name": "Credit / Debit Card",
-        "category": "Bank"
+        "category": "mitra-finpay"
     },
     {
         "id": "dana",
@@ -15,24 +10,9 @@
         "category": "E-Wallet"
     },
     {
-        "id": "finpaybpd",
-        "name": "Finpay BPD",
-        "category": "Bank"
-    },
-    {
-        "id": "finpaycode",
-        "name": "Finpay Payment Code",
-        "category": "Bank"
-    },
-    {
-        "id": "finpaymoney",
-        "name": "Finpay Money",
-        "category": "E-Wallet"
-    },
-    {
         "id": "idm",
         "name": "Indomaret",
-        "category": "E-Wallet"
+        "category": "mitra-finpay"
     },
     {
         "id": "indodana",
@@ -60,24 +40,9 @@
         "category": "E-Wallet"
     },
     {
-        "id": "octoclicks",
-        "name": "OCTO Clicks",
-        "category": "E-Wallet"
-    },
-    {
         "id": "ovo",
         "name": "Ovo",
         "category": "E-Wallet"
-    },
-    {
-        "id": "permatanet",
-        "name": "PermataNet",
-        "category": "Bank"
-    },
-    {
-        "id": "pospay",
-        "name": "Pospay",
-        "category": "Bank"
     },
     {
         "id": "qris",

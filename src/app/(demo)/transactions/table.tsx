@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Trash2, X } from "lucide-react";
 import axios from "axios";
 import { testCreate } from "@/actios/test";
+import { useRouter } from "next/navigation";
 
 export const formatRibuan = (value: string): string => {
   const number = parseFloat(value);
@@ -24,6 +25,7 @@ export const formatRibuan = (value: string): string => {
   }).format(number);
 };
 function TableComponent({ data }: { data: any }) {
+  const router = useRouter();
   return (
     <div>
       <Table>
@@ -43,7 +45,11 @@ function TableComponent({ data }: { data: any }) {
         </TableHeader>
         <TableBody>
           {data.map((item: any, index: any) => (
-            <TableRow key={item.id}>
+            <TableRow
+              onClick={() => router.push(`/transactions/${item.orderId}`)}
+              className="cursor-pointer"
+              key={item.id}
+            >
               <TableCell>{index + 1}</TableCell>
               <TableCell>{item.orderId}</TableCell>
               <TableCell>{item.nis}</TableCell>
@@ -55,8 +61,8 @@ function TableComponent({ data }: { data: any }) {
               <TableCell>
                 <div
                   className={`p-0.5 ${
-                    item.status === "PENDING" ? "bg-red-300" : "bg-green-300"
-                  } w-16 text-xs rounded items-center justify-center`}
+                    item.status === "PENDING" ? "bg-red-400" : "bg-green-400"
+                  } text-white w-16 text-xs rounded items-center justify-center`}
                 >
                   <p className={"text-center"}>{item.status}</p>
                 </div>

@@ -48,7 +48,7 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     nis: "",
     noRek: "",
     name: "",
-    total: 0,
+    amount: 0,
     paymentMethod: "",
     item: []
   });
@@ -56,16 +56,16 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
   const [newItem, setNewItem] = useState({
     category: "",
     keterangan: "",
-    jumlah: ""
+    unitPrice: ""
   });
 
   const validateOrder = () => {
-    const { nis, noRek, name, total, paymentMethod } = order;
+    const { nis, noRek, name, amount, paymentMethod } = order;
     if (
       !nis ||
       !noRek ||
       !name ||
-      !total ||
+      !amount ||
       !paymentMethod ||
       order.item.length === 0
     ) {
@@ -83,30 +83,9 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     testCreate(order);
   };
 
-  //   const handleAddItem = () => {
-  //     // Validasi item baru sebelum ditambahkan
-  //     if (!newItem.category || !newItem.keterangan || !newItem.jumlah) {
-  //       alert("Semua field item harus diisi.");
-  //       return;
-  //     }
-
-  //     // Tambahkan item baru ke dalam state order.item
-  //     setOrder((prevOrder: any) => ({
-  //       ...prevOrder,
-  //       item: [...prevOrder.item, newItem]
-  //     }));
-
-  //     // Reset form item setelah menambahkannya
-  //     setNewItem({
-  //       category: "",
-  //       keterangan: "",
-  //       jumlah: ""
-  //     });
-  //   };
-
   const handleAddItem = () => {
     // Validasi item baru sebelum ditambahkan
-    if (!newItem.category || !newItem.keterangan || !newItem.jumlah) {
+    if (!newItem.category || !newItem.keterangan || !newItem.unitPrice) {
       alert("Semua field item harus diisi.");
       return;
     }
@@ -117,13 +96,13 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
 
       // Hitung total dari item yang sudah ada + item baru
       const total = updatedItems.reduce((acc, currentItem) => {
-        return acc + Number(currentItem.jumlah);
+        return acc + Number(currentItem.unitPrice);
       }, 0);
 
       return {
         ...prevOrder,
         item: updatedItems,
-        total: total.toString() // Simpan total sebagai string jika diperlukan
+        amount: total.toString() // Simpan total sebagai string jika diperlukan
       };
     });
 
@@ -131,7 +110,7 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
     setNewItem({
       category: "",
       keterangan: "",
-      jumlah: ""
+      unitPrice: ""
     });
   };
 
@@ -143,7 +122,7 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
           <CardHeader>
             <div>
               <div>Order - #{orderId}</div>
-              <div>Total : Rp. {formatRibuan(order.total)}</div>
+              <div>Total : Rp. {formatRibuan(order.amount)}</div>
             </div>
           </CardHeader>
           <CardContent>
@@ -253,11 +232,11 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
               <Label>Jumlah</Label>
               <Input
                 placeholder="Jumlah"
-                value={newItem.jumlah}
+                value={newItem.unitPrice}
                 onChange={(e) => {
                   setNewItem((prev) => ({
                     ...prev,
-                    jumlah: e.target.value
+                    unitPrice: e.target.value
                   }));
                 }}
               />
@@ -275,7 +254,7 @@ const SampleData = ({ paymentMethod }: { paymentMethod: any }) => {
                   <TableRow key={index}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.category}</TableCell>
-                    <TableCell>{item.jumlah}</TableCell>
+                    <TableCell>{item.unitPrice}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

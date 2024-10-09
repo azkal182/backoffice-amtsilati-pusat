@@ -35,7 +35,7 @@ export default async function TransactionsPage() {
         </BreadcrumbList>
       </Breadcrumb>
       <PageContainer>
-        <SampleData paymentMethod={paymentMethod} />
+        {/* <SampleData paymentMethod={paymentMethod} /> */}
         <TableComponent data={data} />
       </PageContainer>
     </ContentLayout>

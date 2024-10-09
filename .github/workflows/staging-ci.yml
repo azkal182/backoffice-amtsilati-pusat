@@ -50,20 +50,12 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 178.128.17.214 >> ~/.ssh/known_hosts
 
-      - name: Copy build files to VPS
-        run: |
-          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
-          rsync -avz --delete public/ root@178.128.17.214:/root/project/backoffice/public/
-          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
-
       - name: Deploy to VPS
         run: |
           ssh -tt root@178.128.17.214 << 'EOF'
-
-
             # Verifikasi bahwa direktori /root/project/backoffice ada, jika tidak clone repo
             if [ ! -d "/root/project/backoffice" ]; then
-              echo "Directory /root/project/backoffice does not exist. Creating directory..."
+              echo "Directory /root/project/backoffice does not exist. Cloning project..."
               mkdir -p /root/project/backoffice
             fi
 
@@ -109,3 +101,9 @@ jobs:
             # Keluar dari SSH
             exit
           EOF
+
+      - name: Copy build files to VPS
+        run: |
+          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
+          rsync -avz --delete public/ root@178.128.17.214:/root/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/

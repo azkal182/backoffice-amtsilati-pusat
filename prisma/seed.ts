@@ -22,7 +22,7 @@ async function main() {
         await prisma.paymentMethod.upsert({
             where: { id: method.id }, // Menentukan unik berdasarkan ID
             update: { name: method.name }, // Update jika sudah ada
-            create: { id: method.id, name: method.name, categoty: method.category.toLowerCase() }, // Buat baru jika belum ada
+            create: { id: method.id, name: method.name, categoty: method.category.toLowerCase(), shortName: method.name.replace('Virtual Account', 'VA') }, // Buat baru jika belum ada
         });
     }
 
