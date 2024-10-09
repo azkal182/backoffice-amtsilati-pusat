@@ -39,6 +39,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXTAUTH_URL: "https://backapp.amtsilatipusat.com"
           AUTH_TRUST_HOST: "https://backapp.amtsilatipusat.com"
+          CALLBACK: "https://backapp.amtsilatipusat.com/api/transactions/webhook"
         run: yarn build
 
       - name: Add SSH key
@@ -49,37 +50,72 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 165.22.106.176 >> ~/.ssh/known_hosts
 
+      - name: Deploy to VPS
+        run: |
+          ssh -tt azkal@165.22.106.176 << 'EOF'
+              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
+              if [ ! -d "/home/azkal/project/backoffice" ]; then
+              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
+              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+              cd /home/azkal/project/backoffice
+              git checkout sandbox
+              else
+              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
+              cd /home/azkal/project/backoffice
+              git checkout sandbox
+              git pull origin sandbox
+              fi
+              exit
+          EOF
+
       - name: Copy build files to VPS
         run: |
           rsync -avz --delete .next/ azkal@165.22.106.176:/home/azkal/project/backoffice/.next/
           rsync -avz --delete public/ azkal@165.22.106.176:/home/azkal/project/backoffice/public/
           rsync -avz --delete package.json yarn.lock azkal@165.22.106.176:/home/azkal/project/backoffice/
 
-      - name: Deploy to VPS
+      - name: Install Dependencies and Restart App
         run: |
           ssh -tt azkal@165.22.106.176 << 'EOF'
-            git checkout sandbox
+              # Masuk ke direktori project
+              cd /home/azkal/project/backoffice
 
-            # Verifikasi bahwa direktori /home/azkal/project/backoffice ada, jika tidak clone repo
-            if [ ! -d "/home/azkal/project/backoffice" ]; then
-              echo "Directory /home/azkal/project/backoffice does not exist. Creating directory..."
-              mkdir -p /home/azkal/project/backoffice
-            fi
-
-            # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
-            if pm2 describe backoffice > /dev/null; then
+              # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
+              if pm2 describe backoffice > /dev/null; then
               pm2 stop backoffice
               pm2 delete backoffice
-            else
+              else
               echo "PM2 application 'backoffice' not found, skipping stop."
-            fi
+              fi
 
-            # Install dependencies tanpa melakukan build di VPS
-            cd /home/azkal/project/backoffice/
-            yarn install --production
+              # Install dependencies tanpa build
+              yarn install --production
 
-            # Restart aplikasi dengan PM2 tanpa build
-            pm2 start npm --name "backoffice" -- start -- -p 4000
-            # Keluar dari SSH
-            exit
+              # Update variabel di file .env
+              sed -i '/^DATABASE_URL=/d' .env
+              echo "DATABASE_URL=\"mysql://azkal:azkal@localhost:3306/backoffice\"" >> .env
+
+              sed -i '/^EDGE_STORE_ACCESS_KEY=/d' .env
+              echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
+
+              sed -i '/^EDGE_STORE_SECRET_KEY=/d' .env
+              echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
+
+              sed -i '/^AUTH_SECRET=/d' .env
+              echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+
+              sed -i '/^NEXTAUTH_URL=/d' .env
+              echo "NEXTAUTH_URL=\"https://amtsilati.online\"" >> .env
+
+              sed -i '/^AUTH_TRUST_HOST=/d' .env
+              echo "AUTH_TRUST_HOST=\"https://amtsilati.online\"" >> .env
+
+              sed -i '/^CALLBACK=/d' .env
+              echo "CALLBACK=\"https://amtsilati.online/api/transactions/webhook\"" >> .env
+
+              # Restart aplikasi dengan PM2 tanpa build
+              pm2 start npm --name "backoffice" -- start -- -p 4000
+
+              # Keluar dari SSH
+              exit
           EOF
