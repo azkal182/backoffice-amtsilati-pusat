@@ -21,7 +21,7 @@ import { db } from "@/lib/db";
 import Link from "next/link";
 import React from "react";
 
-export const formatRibuan = (value: string): string => {
+const formatRibuan = (value: string): string => {
   const number = parseFloat(value);
   return new Intl.NumberFormat("id-ID", {
     style: "decimal",
