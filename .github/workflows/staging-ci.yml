@@ -114,7 +114,7 @@ jobs:
               # Verifikasi apakah direktori /root/project/backoffice ada
               if [ ! -d "/root/project/backoffice" ]; then
               echo "Directory /root/project/backoffice does not exist. Cloning project..."
-              git clone https://github.com/your-repo.git /root/project/backoffice
+              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /root/project/backoffice
               cd /root/project/backoffice
               git checkout staging
               else
