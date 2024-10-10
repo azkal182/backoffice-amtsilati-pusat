@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { EdgeStoreProvider } from "@/providers/edge-store-provider";
 import React from "react";
 import { SessionProvider } from "next-auth/react";
+import ClientProvider from "./client-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -27,16 +28,22 @@ export default function RootLayout({
 }>) {
   return (
     <SessionProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={GeistSans.className}>
-          <NextTopLoader />
-          <EdgeStoreProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
-            </ThemeProvider>
-          </EdgeStoreProvider>
-        </body>
-      </html>
+      <ClientProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={GeistSans.className}>
+            <NextTopLoader />
+            <EdgeStoreProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                {children}
+              </ThemeProvider>
+            </EdgeStoreProvider>
+          </body>
+        </html>
+      </ClientProvider>
     </SessionProvider>
   );
 }
