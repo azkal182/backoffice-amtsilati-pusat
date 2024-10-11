@@ -15,10 +15,7 @@ import TableComponent from "@/app/(demo)/transactions/table";
 import { db } from "@/lib/db";
 import SampleData from "./sample";
 
-export default async function TransactionsPage() {
-  const data = await db.transaction.findMany();
-  const paymentMethod = await db.paymentMethod.findMany();
-
+export default function TransactionsPage() {
   return (
     <ContentLayout title="Transaksi">
       <Breadcrumb>
@@ -36,7 +33,7 @@ export default async function TransactionsPage() {
       </Breadcrumb>
       <PageContainer>
         {/* <SampleData paymentMethod={paymentMethod} /> */}
-        <TableComponent data={data} />
+        <TableComponent />
       </PageContainer>
     </ContentLayout>
   );

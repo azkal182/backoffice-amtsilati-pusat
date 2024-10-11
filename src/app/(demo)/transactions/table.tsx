@@ -27,13 +27,13 @@ export const formatRibuan = (value: string): string => {
     maximumFractionDigits: 2
   }).format(number);
 };
-function TableComponent({ data }: { data: any }) {
+function TableComponent() {
   const router = useRouter();
   const { data: transactios, isLoading } = useTransactionQuery();
   return (
     <div>
       <Table>
-        <TableCaption>A list of your recent posters.</TableCaption>
+        <TableCaption>A list of your recent Transactions.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>No</TableHead>
@@ -76,7 +76,7 @@ function TableComponent({ data }: { data: any }) {
                 <TableCell>{item.nis}</TableCell>
                 <TableCell>{item.noRek}</TableCell>
                 <TableCell>{item.name}</TableCell>
-                <TableCell>{item.paymentCode}</TableCell>
+                <TableCell>{item?.paymentCode}</TableCell>
                 <TableCell>{item.paymentMethod}</TableCell>
                 <TableCell>{formatRibuan(item.totalAmount)}</TableCell>
                 <TableCell>
