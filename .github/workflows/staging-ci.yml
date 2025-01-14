@@ -28,12 +28,12 @@ jobs:
 
       - name: Run Prisma Migrations
         env:
-          DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3306/backoffice"
+          DATABASE_URL: "mysql://azkal:azkal@139.59.227.23:3306/backoffice"
         run: npx prisma migrate deploy || sleep 10 && npx prisma migrate deploy
 
       - name: Build Next.js application
         env:
-          DATABASE_URL: "mysql://azkal:azkal@178.128.17.214:3306/backoffice"
+          DATABASE_URL: "mysql://azkal:azkal@139.59.227.23:3306/backoffice"
           EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
           EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
@@ -48,11 +48,11 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add server to known_hosts
-        run: ssh-keyscan 178.128.17.214 >> ~/.ssh/known_hosts
+        run: ssh-keyscan 139.59.227.23 >> ~/.ssh/known_hosts
 
       - name: Deploy to VPS
         run: |
-          ssh -tt root@178.128.17.214 << 'EOF'
+          ssh -tt root@139.59.227.23 << 'EOF'
               # Verifikasi apakah direktori /root/project/backoffice ada
               if [ ! -d "/root/project/backoffice" ]; then
               echo "Directory /root/project/backoffice does not exist. Cloning project..."
@@ -71,13 +71,13 @@ jobs:
 
       - name: Copy build files to VPS
         run: |
-          rsync -avz --delete .next/ root@178.128.17.214:/root/project/backoffice/.next/
-          rsync -avz --delete public/ root@178.128.17.214:/root/project/backoffice/public/
-          rsync -avz --delete package.json yarn.lock root@178.128.17.214:/root/project/backoffice/
+          rsync -avz --delete .next/ root@139.59.227.23:/root/project/backoffice/.next/
+          rsync -avz --delete public/ root@139.59.227.23:/root/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock root@139.59.227.23:/root/project/backoffice/
 
       - name: Install Dependencies and Restart App
         run: |
-          ssh -tt root@178.128.17.214 << 'EOF'
+          ssh -tt root@139.59.227.23 << 'EOF'
               # Masuk ke direktori project
               cd /root/project/backoffice
 
