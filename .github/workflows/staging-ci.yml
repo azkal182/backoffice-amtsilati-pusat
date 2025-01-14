@@ -50,24 +50,43 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 139.59.227.23 >> ~/.ssh/known_hosts
 
+#      - name: Deploy to VPS
+#        run: |
+#          ssh -tt azkal@139.59.227.23 << 'EOF'
+#              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
+#              if [ ! -d "/home/azkal/project/backoffice" ]; then
+#              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
+#              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+#              cd /home/azkal/project/backoffice
+#              git checkout staging
+#              else
+#              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
+#              cd /home/azkal/project/backoffice
+#              git checkout staging
+#              git pull origin staging
+#              fi
+#
+#              exit
+#          EOF
       - name: Deploy to VPS
         run: |
           ssh -tt azkal@139.59.227.23 << 'EOF'
-              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
-              if [ ! -d "/home/azkal/project/backoffice" ]; then
-              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
-              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
-              cd /home/azkal/project/backoffice
-              git checkout staging
+              # Periksa apakah direktori ada dan merupakan repository Git
+              if [ -d "/home/azkal/project/backoffice" ] && [ -d "/home/azkal/project/backoffice/.git" ]; then
+                  echo "Directory /home/azkal/project/backoffice exists and is a Git repository. Pulling latest changes..."
+                  cd /home/azkal/project/backoffice
+                  git checkout staging
+                  git pull origin staging
               else
-              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
-              cd /home/azkal/project/backoffice
-              git checkout staging
-              git pull origin staging
+                  echo "Directory /home/azkal/project/backoffice does not exist or is not a Git repository. Recreating..."
+                  rm -rf /home/azkal/project/backoffice
+                  git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+                  cd /home/azkal/project/backoffice
+                  git checkout staging
               fi
-
               exit
           EOF
+
 
       - name: Copy build files to VPS
         run: |
