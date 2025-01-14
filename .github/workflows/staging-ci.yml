@@ -53,15 +53,15 @@ jobs:
       - name: Deploy to VPS
         run: |
           ssh -tt azkal@139.59.227.23 << 'EOF'
-              # Verifikasi apakah direktori /azkal/project/backoffice ada
-              if [ ! -d "/azkal/project/backoffice" ]; then
-              echo "Directory /azkal/project/backoffice does not exist. Cloning project..."
-              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /azkal/project/backoffice
-              cd /azkal/project/backoffice
+              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
+              if [ ! -d "/home/azkal/project/backoffice" ]; then
+              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
+              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+              cd /home/azkal/project/backoffice
               git checkout staging
               else
-              echo "Directory /azkal/project/backoffice exists. Pulling latest changes..."
-              cd /azkal/project/backoffice
+              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
+              cd /home/azkal/project/backoffice
               git checkout staging
               git pull origin staging
               fi
@@ -71,15 +71,15 @@ jobs:
 
       - name: Copy build files to VPS
         run: |
-          rsync -avz --delete .next/ azkal@139.59.227.23:/azkal/project/backoffice/.next/
-          rsync -avz --delete public/ azkal@139.59.227.23:/azkal/project/backoffice/public/
-          rsync -avz --delete package.json yarn.lock azkal@139.59.227.23:/azkal/project/backoffice/
+          rsync -avz --delete .next/ azkal@139.59.227.23:/home/azkal/project/backoffice/.next/
+          rsync -avz --delete public/ azkal@139.59.227.23:/home/azkal/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock azkal@139.59.227.23:/home/azkal/project/backoffice/
 
       - name: Install Dependencies and Restart App
         run: |
           ssh -tt azkal@139.59.227.23 << 'EOF'
               # Masuk ke direktori project
-              cd /azkal/project/backoffice
+              cd /home/azkal/project/backoffice
 
               # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
               if pm2 describe backoffice > /dev/null; then
