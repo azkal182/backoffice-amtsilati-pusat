@@ -27,9 +27,23 @@ export const formatRibuan = (value: string): string => {
     maximumFractionDigits: 2
   }).format(number);
 };
+
 function TableComponent() {
   const router = useRouter();
   const { data: transactios, isLoading } = useTransactionQuery();
+
+  const getColor = (value: string): string => {
+    switch (value) {
+      case "SUCCESS":
+        return "bg-green-500";
+      case "FAILED":
+        return "bg-red-500";
+      case "EXPIRED":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
   return (
     <div>
       <Table>
@@ -81,9 +95,9 @@ function TableComponent() {
                 <TableCell>{formatRibuan(item.totalAmount)}</TableCell>
                 <TableCell>
                   <div
-                    className={`p-0.5 ${
-                      item.status === "PENDING" ? "bg-red-400" : "bg-green-400"
-                    } text-white w-16 text-xs rounded items-center justify-center`}
+                    className={`p-0.5 ${getColor(
+                      item.status
+                    )} text-white w-16 text-xs rounded items-center justify-center`}
                   >
                     <p className={"text-center"}>{item.status}</p>
                   </div>

@@ -1,202 +1,217 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id       Int       @id @default(autoincrement())
-    username String    @unique
-    password String
-    role     RoleUser? @default(USER)
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  role     RoleUser? @default(USER)
 }
 
 model Poster {
-    id          Int      @id @default(autoincrement())
-    description String?
-    url         String
-    path        String?
-    created_at  DateTime @default(now())
-    publish     Boolean  @default(true)
+  id          Int      @id @default(autoincrement())
+  description String?
+  url         String
+  path        String?
+  created_at  DateTime @default(now())
+  publish     Boolean  @default(true)
 }
 
 model Store {
-    id              Int      @id @default(autoincrement())
-    title           String
-    description     String
-    firstPublished  DateTime @default(now())
-    maximumPurchase Int
-    pageTotal       Int
-    isbn            String?
-    width           Int
-    height          Int
-    price           Float
-    cover           String
-    created_at      DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String   @db.Text
+  firstPublished  DateTime @default(now())
+  maximumPurchase Int
+  pageTotal       Int
+  isbn            String?
+  width           Int
+  height          Int
+  price           Float
+  cover           String
+  created_at      DateTime @default(now())
 }
 
 model Event {
-    id            Int           @id @default(autoincrement())
-    name          String
-    startDate     DateTime
-    isHijri       Boolean
-    isCutiBersama Boolean       @default(false)
-    calculateAge  Boolean       @default(false)
-    showYear      Boolean       @default(false)
-    frequency     FrequencyType
-    category      Category
-    duration      Int?
-    endDate       DateTime?
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
+  id            Int           @id @default(autoincrement())
+  name          String
+  startDate     DateTime
+  isHijri       Boolean
+  isCutiBersama Boolean       @default(false)
+  calculateAge  Boolean       @default(false)
+  showYear      Boolean       @default(false)
+  frequency     FrequencyType
+  category      Category
+  duration      Int?
+  endDate       DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model PriceSyahriyah {
-    id            Int       @id @default(autoincrement())
-    priceAtHijri  String
-    priceAtMasehi DateTime?
-    priceFull     Int
-    priceDisc     Int
-    updatedAt     DateTime? @updatedAt
+  id            Int       @id @default(autoincrement())
+  priceAtHijri  String
+  priceAtMasehi DateTime?
+  priceFull     Int
+  priceDisc     Int
+  updatedAt     DateTime? @updatedAt
 }
 
 model Pengurus {
-    id              Int                     @id @default(autoincrement())
-    nis             String                  @unique
-    name            String
-    active          Boolean?                @default(true)
-    pengurusHistory PengurusStatusHistory[]
+  id              Int                     @id @default(autoincrement())
+  nis             String                  @unique
+  name            String
+  active          Boolean?                @default(true)
+  pengurusHistory PengurusStatusHistory[]
 }
 
 model PengurusStatusHistory {
-    id             Int           @id @default(autoincrement())
-    pengurusId     Int
-    categoryPrice  CatgoryPrice? @default(FULL)
-    startFormHijri String
-    startMasehiAt  DateTime?
-    updatedAt      DateTime?     @updatedAt
-    pengurus       Pengurus      @relation(fields: [pengurusId], references: [id])
+  id             Int           @id @default(autoincrement())
+  pengurusId     Int
+  categoryPrice  CatgoryPrice? @default(FULL)
+  startFormHijri String
+  startMasehiAt  DateTime?
+  updatedAt      DateTime?     @updatedAt
+  pengurus       Pengurus      @relation(fields: [pengurusId], references: [id])
 
-    @@index([pengurusId], map: "PengurusStatusHistory_pengurusId_fkey")
+  @@index([pengurusId], map: "PengurusStatusHistory_pengurusId_fkey")
 }
 
 model Province {
-    id        Int       @id @default(autoincrement())
-    name      String
-    code      String
-    regencies Regency[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  code      String
+  regencies Regency[]
 }
 
 model Regency {
-    id         Int        @id @default(autoincrement())
-    name       String
-    label      String?
-    type       String?
-    code       String
-    fullCode   String
-    provinceId Int
-    districts  District[]
-    province   Province   @relation(fields: [provinceId], references: [id])
+  id         Int        @id @default(autoincrement())
+  name       String
+  label      String?
+  type       String?
+  code       String
+  fullCode   String
+  provinceId Int
+  districts  District[]
+  province   Province   @relation(fields: [provinceId], references: [id])
 
-    @@index([provinceId], map: "Regency_provinceId_fkey")
+  @@index([provinceId], map: "Regency_provinceId_fkey")
 }
 
 model District {
-    id        Int       @id @default(autoincrement())
-    name      String
-    code      String
-    fullCode  String
-    regencyId Int
-    regency   Regency   @relation(fields: [regencyId], references: [id])
-    villages  Village[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  code      String
+  fullCode  String
+  regencyId Int
+  regency   Regency   @relation(fields: [regencyId], references: [id])
+  villages  Village[]
 
-    @@index([regencyId], map: "District_regencyId_fkey")
+  @@index([regencyId], map: "District_regencyId_fkey")
 }
 
 model Village {
-    id         Int      @id @default(autoincrement())
-    name       String
-    code       String
-    fullCode   String
-    postalCode String
-    districtId Int
-    district   District @relation(fields: [districtId], references: [id])
+  id         Int      @id @default(autoincrement())
+  name       String
+  code       String
+  fullCode   String
+  postalCode String
+  districtId Int
+  district   District @relation(fields: [districtId], references: [id])
 
-    @@index([districtId], map: "Village_districtId_fkey")
+  @@index([districtId], map: "Village_districtId_fkey")
 }
 
 model PaymentMethod {
-    id        String @id @default(cuid())
-    name      String
-    categoty  String
-    shortName String
+  id        String @id @default(cuid())
+  name      String
+  categoty  String
+  shortName String
 }
 
 model Transaction {
-    id              Int                 @id @default(autoincrement())
-    orderId         String              @unique
-    nis             String
-    noRek           String
-    name            String
-    transactionDate DateTime            @default(now())
-    totalAmount     Float
-    paymentCode     String?
-    paymentMethod   String
-    status          TransactionStatus
-    traceId         String
-    paidAt          DateTime?
-    expiryLink      String?
-    redirecturl     String?
-    stringQr        String?
-    details         TransactionDetail[] @relation("TransactionDetails")
+  id              Int                 @id @default(autoincrement())
+  orderId         String              @unique
+  nis             String
+  noRek           String
+  name            String
+  transactionDate DateTime            @default(now())
+  totalAmount     Float
+  paymentCode     String?
+  paymentMethod   String
+  status          TransactionStatus
+  traceId         String
+  paidAt          DateTime?
+  expiryLink      String?
+  redirecturl     String?
+  stringQr        String?
+  details         TransactionDetail[] @relation("TransactionDetails")
 }
 
 model TransactionDetail {
-    id            Int         @id @default(autoincrement())
-    sandiId       String
-    description   String
-    total         Float
-    transactionId Int
-    transaction   Transaction @relation("TransactionDetails", fields: [transactionId], references: [id])
+  id            Int         @id @default(autoincrement())
+  sandiId       String
+  description   String
+  total         Float
+  transactionId Int
+  transaction   Transaction @relation("TransactionDetails", fields: [transactionId], references: [id])
 
-    @@index([transactionId], map: "TransactionDetail_transactionId_fkey")
+  @@index([transactionId], map: "TransactionDetail_transactionId_fkey")
 }
 
 enum RoleUser {
-    ADMIN
-    USER
+  ADMIN
+  USER
 }
 
 enum FrequencyType {
-    DAILY
-    WEEKLY
-    MONTHLY
-    YEARLY
-    HIJRI_MONTHLY
-    HIJRI_YEARLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  HIJRI_MONTHLY
+  HIJRI_YEARLY
 }
 
 enum Category {
-    HARI_LIBUR_NASIONAL
-    HARI_BESAR_ISLAM
-    HARI_BESAR_PPDF
-    HARI_SUNNAH
+  HARI_LIBUR_NASIONAL
+  HARI_BESAR_ISLAM
+  HARI_BESAR_PPDF
+  HARI_SUNNAH
 }
 
 enum CatgoryPrice {
-    FULL
-    DISC
-    FREE
+  FULL
+  DISC
+  FREE
 }
 
 enum TransactionStatus {
-    PAID
-    REFUNDED
-    CANCELLED
-    FAILURE
-    PENDING
-    EXPIRED
+  PAID
+  REFUNDED
+  CANCELLED
+  FAILURE
+  PENDING
+  EXPIRED
+}
+
+model Article {
+  id            Int       @id @default(autoincrement())
+  wordpressId   Int       @unique // ID artikel dari WordPress
+  title         String // Judul artikel
+  content       Json // Konten artikel
+  excerpt       String? // Cuplikan artikel
+  slug          String    @unique // URL slug
+  status        String // Status artikel (e.g., "publish", "draft")
+  type          String // Jenis artikel (e.g., "post", "page")
+  author        String?
+  category      String?   @default("uncategory")
+  featuredImage String?
+  publishedAt   DateTime? // Tanggal publikasi
 }
