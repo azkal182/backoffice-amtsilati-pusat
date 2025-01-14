@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getPosts } from "@/actios/wordpress";
+import { getPostById } from "@/actios/wordpress";
 
 export async function GET(
   request: NextRequest,
@@ -16,6 +16,6 @@ export async function GET(
   if (data) {
     return NextResponse.json(data);
   }
-  const result = await getPosts(parseInt(id));
+  const result = await getPostById(parseInt(id));
   return NextResponse.json(result);
 }

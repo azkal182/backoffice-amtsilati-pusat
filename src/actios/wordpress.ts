@@ -144,7 +144,7 @@ const convertContentToJson = (htmlContent: String): ContentItem[] => {
   return content;
 };
 
-export const getPosts = async (id: number) => {
+export const getPostById = async (id: number) => {
   const article = await wp
     .posts()
     .id(id)
@@ -179,4 +179,16 @@ export const getPosts = async (id: number) => {
     },
   });
   return data;
+};
+
+export const getPosts = async () => {
+  return await wp
+    .posts()
+    .embed()
+    .get(function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      return data;
+    });
 };
