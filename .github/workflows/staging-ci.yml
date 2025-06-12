@@ -50,24 +50,24 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan 139.59.227.23 >> ~/.ssh/known_hosts
 
-#      - name: Deploy to VPS
-#        run: |
-#          ssh -tt azkal@139.59.227.23 << 'EOF'
-#              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
-#              if [ ! -d "/home/azkal/project/backoffice" ]; then
-#              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
-#              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
-#              cd /home/azkal/project/backoffice
-#              git checkout staging
-#              else
-#              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
-#              cd /home/azkal/project/backoffice
-#              git checkout staging
-#              git pull origin staging
-#              fi
-#
-#              exit
-#          EOF
+      #      - name: Deploy to VPS
+      #        run: |
+      #          ssh -tt azkal@139.59.227.23 << 'EOF'
+      #              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
+      #              if [ ! -d "/home/azkal/project/backoffice" ]; then
+      #              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
+      #              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+      #              cd /home/azkal/project/backoffice
+      #              git checkout staging
+      #              else
+      #              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
+      #              cd /home/azkal/project/backoffice
+      #              git checkout staging
+      #              git pull origin staging
+      #              fi
+      #
+      #              exit
+      #          EOF
       - name: Deploy to VPS
         run: |
           ssh -tt azkal@139.59.227.23 << 'EOF'
@@ -86,7 +86,6 @@ jobs:
               fi
               exit
           EOF
-
 
       - name: Copy build files to VPS
         run: |
@@ -109,6 +108,7 @@ jobs:
               fi
 
               # Install dependencies tanpa build
+              npx prisma generate
               yarn install --production
 
               # Update variabel di file .env
