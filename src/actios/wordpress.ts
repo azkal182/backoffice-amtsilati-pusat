@@ -181,10 +181,11 @@ export const getPostById = async (id: number) => {
   return data;
 };
 
-export const getPosts = async () => {
+export const getPosts = async (perPage = 10) => {
   return await wp
     .posts()
     .embed()
+    .perPage(perPage)
     .get(function (err, data) {
       if (err) {
         console.log(err);

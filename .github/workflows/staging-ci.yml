@@ -134,7 +134,7 @@ jobs:
               echo "CALLBACK=\"https://amtsilati.online/api/transactions/webhook\"" >> .env
 
               # Restart aplikasi dengan PM2 tanpa build
-              pm2 start npm --name "backoffice" -- start -- -p 3000
+              pm2 start npm --name "backoffice" -- start -- -p 4000
 
               # Keluar dari SSH
               exit
