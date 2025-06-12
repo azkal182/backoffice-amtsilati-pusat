@@ -5,6 +5,7 @@ import Districts from "./json/kecamatan.json";
 import Villages from "./json/kelurahan.json";
 import PaymentMethods from "./json/payment-methods.json";
 import Store from "./json/store.json";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -32,9 +33,9 @@ async function main() {
         height: store.height,
         price: store.price,
         cover: store.cover,
-        created_at: store.created_at,
+        created_at: store.created_at
       },
-      create: store,
+      create: store
     });
   }
 
@@ -46,8 +47,8 @@ async function main() {
         id: method.id,
         name: method.name,
         categoty: method.category.toLowerCase(),
-        shortName: method.name.replace("Virtual Account", "VA"),
-      }, // Buat baru jika belum ada
+        shortName: method.name.replace("Virtual Account", "VA")
+      } // Buat baru jika belum ada
     });
   }
 
@@ -55,25 +56,23 @@ async function main() {
     data: [
       {
         username: "admin",
-        password:
-          "$2y$10$KudiGr4hKhYDtpiTAY5cKOd5.DIF1uPf9U13RMTidDVKuGvrGfbfS",
+        password: "$2y$10$KudiGr4hKhYDtpiTAY5cKOd5.DIF1uPf9U13RMTidDVKuGvrGfbfS"
       },
       {
         username: "ropik",
-        password:
-          "$2y$10$l1VWHKSwmDJW01o6x1u.le0.YgPYoK6WDBVqbmJ8GWKzUqFijmPgG",
-      },
-    ],
+        password: "$2y$10$l1VWHKSwmDJW01o6x1u.le0.YgPYoK6WDBVqbmJ8GWKzUqFijmPgG"
+      }
+    ]
   });
   console.log("insert provice ...");
 
   const formattedProvinces = Provinces.map((item) => ({
     id: item.id,
     name: item.name,
-    code: item.code,
+    code: item.code
   }));
   await prisma.province.createMany({
-    data: formattedProvinces,
+    data: formattedProvinces
   });
   console.log("province done");
 
@@ -85,11 +84,11 @@ async function main() {
     label: `${item.type === "Kota" ? "Kota." : "Kab."} ${item.name}`,
     type: item.type,
     fullCode: item.full_code,
-    provinceId: item.provinsi_id,
+    provinceId: item.provinsi_id
   }));
 
   await prisma.regency.createMany({
-    data: formattedRegencies,
+    data: formattedRegencies
   });
 
   console.log("regencies done");
@@ -101,11 +100,11 @@ async function main() {
     name: item.name,
     code: item.code,
     fullCode: item.full_code,
-    regencyId: item.kabupaten_id,
+    regencyId: item.kabupaten_id
   }));
 
   await prisma.district.createMany({
-    data: formattedDistricts,
+    data: formattedDistricts
   });
   console.log("districts done");
 
@@ -115,13 +114,21 @@ async function main() {
     code: item.code,
     fullCode: item.full_code,
     postalCode: item.pos_code,
-    districtId: item.kecamatan_id,
+    districtId: item.kecamatan_id
   }));
 
   await prisma.village.createMany({
     data: formattedVillages,
-    skipDuplicates: true,
+    skipDuplicates: true
   });
+
+  //   const passwordHash = await hash("admin", 10);
+  //   await prisma.user.create({
+  //     data: {
+  //       username: "admin",
+  //       password: passwordHash
+  //     }
+  //   });
 }
 main()
   .then(async () => {
