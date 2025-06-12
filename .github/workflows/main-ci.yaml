@@ -1,0 +1,121 @@
+name: CI/CD Next.js with Prisma
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Print current branch
+        run: echo ${{ github.ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Print DATABASE_URL
+        run: echo ${{ secrets.DATABASE_URL }}
+
+      - name: Run Prisma Migrations
+        env:
+          DATABASE_URL: "mysql://alan:alan@165.22.106.176:3306/backoffice"
+        run: npx prisma migrate deploy || sleep 10 && npx prisma migrate deploy
+
+      - name: Build Next.js application
+        env:
+          DATABASE_URL: "mysql://alan:alan@165.22.106.176:3306/backoffice"
+          EDGE_STORE_ACCESS_KEY: ${{ secrets.EDGE_STORE_ACCESS_KEY }}
+          EDGE_STORE_SECRET_KEY: ${{ secrets.EDGE_STORE_SECRET_KEY }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          NEXTAUTH_URL: "https://backapp.amtsilatipusat.com"
+          AUTH_TRUST_HOST: "https://backapp.amtsilatipusat.com"
+          CALLBACK: "https://backapp.amtsilatipusat.com/api/transactions/webhook"
+        run: yarn build
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan 165.22.106.176 >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          ssh -tt azkal@165.22.106.176 << 'EOF'
+              # Verifikasi apakah direktori /home/azkal/project/backoffice ada
+              if [ ! -d "/home/azkal/project/backoffice" ]; then
+              echo "Directory /home/azkal/project/backoffice does not exist. Cloning project..."
+              git clone https://github.com/azkal182/backoffice-amtsilati-pusat.git /home/azkal/project/backoffice
+              cd /home/azkal/project/backoffice
+              git checkout main
+              else
+              echo "Directory /home/azkal/project/backoffice exists. Pulling latest changes..."
+              cd /home/azkal/project/backoffice
+              git checkout main
+              git pull origin main
+              fi
+              exit
+          EOF
+
+      - name: Copy build files to VPS
+        run: |
+          rsync -avz --delete .next/ azkal@165.22.106.176:/home/azkal/project/backoffice/.next/
+          rsync -avz --delete public/ azkal@165.22.106.176:/home/azkal/project/backoffice/public/
+          rsync -avz --delete package.json yarn.lock azkal@165.22.106.176:/home/azkal/project/backoffice/
+
+      - name: Install Dependencies and Restart App
+        run: |
+          ssh -tt azkal@165.22.106.176 << 'EOF'
+              # Masuk ke direktori project
+              cd /home/azkal/project/backoffice
+
+              # Hentikan aplikasi yang berjalan (jika menggunakan PM2)
+              if pm2 describe backoffice > /dev/null; then
+              pm2 stop backoffice
+              pm2 delete backoffice
+              else
+              echo "PM2 application 'backoffice' not found, skipping stop."
+              fi
+
+              # Install dependencies tanpa build
+              yarn install --production
+
+              # Update variabel di file .env
+              sed -i '/^DATABASE_URL=/d' .env
+              echo "DATABASE_URL=\"mysql://alan:alan@localhost:3306/backoffice\"" >> .env
+
+              sed -i '/^EDGE_STORE_ACCESS_KEY=/d' .env
+              echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
+
+              sed -i '/^EDGE_STORE_SECRET_KEY=/d' .env
+              echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
+
+              sed -i '/^AUTH_SECRET=/d' .env
+              echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+
+              sed -i '/^NEXTAUTH_URL=/d' .env
+              echo "NEXTAUTH_URL=\"https://backapp.amtsilatipusat.com\"" >> .env
+
+              sed -i '/^AUTH_TRUST_HOST=/d' .env
+              echo "AUTH_TRUST_HOST=\"https://backapp.amtsilatipusat.com\"" >> .env
+
+              sed -i '/^CALLBACK=/d' .env
+              echo "CALLBACK=\"https://backapp.amtsilatipusat.com/api/transactions/webhook\"" >> .env
+
+              # Restart aplikasi dengan PM2 tanpa build
+              pm2 start npm --name "backoffice" -- start -- -p 4000
+
+              # Keluar dari SSH
+              exit
+          EOF
