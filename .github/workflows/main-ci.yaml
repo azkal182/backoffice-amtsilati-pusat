@@ -90,6 +90,7 @@ jobs:
 
               # Install dependencies tanpa build
               yarn install --production
+              npx prisma generate
 
               # Update variabel di file .env
               sed -i '/^DATABASE_URL=/d' .env
